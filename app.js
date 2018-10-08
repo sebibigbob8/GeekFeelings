@@ -11,7 +11,7 @@ var peopleRouter = require('./routes/peoples');
 var app = express();
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-mongoose.connect('process.env.MONGODB_URI || mongodb://localhost/GeekFeelingsTest');//Heroku || Local
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/GeekFeelingsTest');//Heroku || Local
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
