@@ -1,30 +1,30 @@
 var express = require('express');
 var router = express.Router();
-const User = require('../models/user');
+const Picture = require('../models/picture');
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     /**
-     * Get all users
+     * Get all pictures
      */
 });
 router.get('/:id', function(req, res, next) {
     /**
-     * Get a user specified
+     * Get a picture
      */
 });
 router.patch('/:id', function(req, res, next) {
     /**
-     * Modify an user
+     * Modify a picture
      */
 });
 router.post('', function(req, res, next) {
     /**
-     * Create an user
+     * Create a picture
      */
 });
 router.delete('/:id', function(req, res, next) {
     /**
-     * Delete an user
+     * Delete a picture
      */
 });
 module.exports = router;
