@@ -13,8 +13,13 @@ router.get('/', function(req, res, next) {
     let query = peopleModel.find({});
     query.exec(function (err,docs)
     {
-        console.log(docs);
+        if (err)
+        {
+            console.warn("Could not get all peoples");
+            next(err);
+        }else{
+            res.send(docs);
+        }
     })
-    next();
 });
 module.exports = router;

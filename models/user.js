@@ -15,7 +15,7 @@ const userSchema = new Schema({
     street : String,
     streetNumber : String,
     npa : {
-        type : number,
+        type : Number,
         min : 4,
         max : 4,
     },

@@ -11,7 +11,12 @@ var peopleRouter = require('./routes/peoples');
 var app = express();
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/GeekFeelingsTest');//Heroku || Local
+//TODO: Comment tester correctement le test a la BD
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/geekFeelings', function(err){
+  if(mongoose.connection.readyState === 0)
+    createError(500);
+});//Heroku || Local
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

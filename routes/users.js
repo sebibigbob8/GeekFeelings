@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const MONGOOSE = require('mongoose');
 const User = require('../models/user');
-let userModel = MONGOOSE.model('User',People.schema);
+let userModel = MONGOOSE.model('User',User.schema);
 /* GET users listing. */
 router.get('/', function(req, res, next) {
     /**
@@ -14,9 +14,9 @@ router.get('/', function(req, res, next) {
         if (err)
         {
             console.warn("Could not get all users");
-            next();
+            next(err); //Fait suivre le message d'erreur
         }else{
-            res.send(docs);
+            res.send(docs); //Renvoi des data
         }
     })
 
