@@ -10,7 +10,8 @@ const userSchema = new Schema({
     },
     password :  {
         type: String,
-        min: 6
+        min: 6,
+        select: false
     },
     street : String,
     streetNumber : String,
