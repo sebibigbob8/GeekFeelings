@@ -28,9 +28,32 @@ router.get('/:id',loadUserById, function(req, res, next) {
 });
 /**
  * Modify an user
+ * If the client do not
  */
-router.patch('/:id', function(req, res, next) {
+router.patch('/:id',loadUserById,function(req, res, next) {
+    if (req.body.street !== undefined) {
+        req.user.street = req.body.street;
+    }
+    if (req.body.streetNumber !== undefined) {
+        req.user.streetNumber = req.body.streetNumber;
+    }
+    if (req.body.npa !== undefined) {
+        req.user.npa = req.body.npa;
+    }
+    if (req.body.city !== undefined) {
+        req.user.city = req.body.city;
+    }
+    if (req.body.description !== undefined) {
+        req.user.description = req.body.description;
+    }
 
+    req.user.save(function(err, savedUser) {
+        if (err) {
+            return next(err);
+        }
+        console.log(`Updated user "${savedUser.title}"`);
+        res.send(savedUser);
+    });
 });
 /**
  * Create an user
