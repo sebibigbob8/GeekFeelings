@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+var softDelete = require('mongoose-delete');
 // Define the schema for users
 const userSchema = new Schema({
     name: {
@@ -44,7 +45,12 @@ const userSchema = new Schema({
     },
     tag : {
         type : Array
+    },
+    deleted : {
+        select:false
     }
 });
+userSchema.plugin(softDelete);
+userSchema.plugin(softDelete, { overrideMethods: 'all' });
 // Create the model from the schema and export it
 module.exports = mongoose.model('User', userSchema);

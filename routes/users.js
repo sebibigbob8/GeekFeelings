@@ -70,8 +70,14 @@ router.post('', function(req, res, next) {
 /**
  * Delete an user
  */
-router.delete('/:id', function(req, res, next) {
-
+router.delete('/:id', loadUserById, function(req, res, next) {
+    req.user.delete(function(err) {
+        if (err) {
+            return next(err);
+        }
+        console.log(`Deleted movie "${req.user.name}"`);
+        res.sendStatus(204);
+    });
 });
 /**
  * Load a user in the Request object depending of params given
