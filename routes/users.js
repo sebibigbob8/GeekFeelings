@@ -59,7 +59,13 @@ router.patch('/:id',loadUserById,function(req, res, next) {
  * Create an user
  */
 router.post('', function(req, res, next) {
-
+    new User(req.body).save(function(err, saveduser) {
+        if (err) {
+            return next(err);
+        }
+        console.log(`Created user "${saveduser}"`);
+        res.status(201).send(saveduser);
+    });
 });
 /**
  * Delete an user

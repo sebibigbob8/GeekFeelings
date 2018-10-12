@@ -2,28 +2,49 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 // Define the schema for users
 const userSchema = new Schema({
-    name: String,
+    name: {
+        type : String,
+        required: true
+    },
     username: {
         type: String,
         unique: true,
-        min: 6
+        min: 6,
+        required: true
     },
     password :  {
         type: String,
         min: 6,
         select: false
     },
-    street : String,
-    streetNumber : String,
+    street : {
+        type : String,
+        required: true
+    },
+    streetNumber : {
+        type : String,
+        required: true
+    },
     npa : {
         type : Number,
         min : 1000,
         max : 9999,
     },
-    city : String,
-    dateBirth : Date,
-    description : String,
-    tag : Array
+    city : {
+        type : String,
+        required: true
+    },
+    dateBirth : {
+        type : Date,
+        required: true
+    },
+    description : {
+        type : String,
+        required: true
+    },
+    tag : {
+        type : Array
+    }
 });
 // Create the model from the schema and export it
 module.exports = mongoose.model('User', userSchema);
