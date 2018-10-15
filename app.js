@@ -1,7 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
-var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
@@ -11,12 +10,7 @@ var peopleRouter = require('./routes/peoples');
 var app = express();
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-//TODO: Comment tester correctement le test a la BD
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/geekFeelings', function(err){
-  if(mongoose.connection.readyState === 0)
-    createError(500);
-});//Heroku || Local
-
+mongoose.connect('mongodb://localhost/GeekFeelingsTest');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
