@@ -2,17 +2,21 @@ var express = require('express');
 var router = express.Router();
 const MONGOOSE = require('mongoose');
 const User = require('../models/user');
-let userModel = MONGOOSE.model('User',User.schema);
+let user = MONGOOSE.model('User',User.schema);
 const ObjectId = MONGOOSE.Types.ObjectId;
 /**
- * Get all users
- * Pagination depending of the amount of users and the client's needs
+ * Get all users,Pagination depending of the amount of users and the client's needs
+ * @api {get} /users Request all users
+ * @apiName GetUsers
+ * @apiGroup User
+ *
+ * @apiUse userJSON
  */
 router.get('/', function(req, res, next) {
-    let query = userModel.find({});
-    userModel.find().count(function(err, total) {
+    let query = User.find({});
+    User.find().count(function(err, total) {
         if (err) { return next(err); };
-        let query = userModel.find();
+        let query = User.find();
         // Parse the "page" param (default to 1 if invalid)
         let page = parseInt(req.query.page, 10);
         if (isNaN(page) || page < 1) { page=1; }
@@ -39,13 +43,34 @@ router.get('/', function(req, res, next) {
 });
 /**
  * Get a user specified
+ * @api {get} /users/:id Request a user's information
+ * @apiName GetUser
+ * @apiGroup User
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiDefine userJSON
+ * @apiSuccess {String} name First name of the user
+ * @apiSuccess {String} username username of the user
+ * @apiSuccess {String} password password of the user
+ * @apiSuccess {String} street street of the user's adress
+ * @apiSuccess {String} streetNumber street's number of the user's adress
+ * @apiSuccess {Number} npa npa number of the user's adress
+ * @apiSuccess {String} city city of the user's adress
+ * @apiSuccess {Date} birthDate date of birth of the user
+ * @apiSuccess {String} description description of the user
+ * @apiSuccess {Array} tag table of centers of interests
  */
 router.get('/:id',loadUserById, function(req, res, next) {
     res.send(req.user);
 });
 /**
  * Modify an user
- * If the client do not
+ * @api {patch} /users/:id Request a user's information
+ * @apiName updateUser
+ * @apiGroup User
+ * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiUse userJSON
  */
 router.patch('/:id',loadUserById,function(req, res, next) {
     if (req.body.street !== undefined) {
@@ -74,6 +99,20 @@ router.patch('/:id',loadUserById,function(req, res, next) {
 });
 /**
  * Create an user
+ * @api {post} /users Create a new user
+ * @apiName createUser
+ * @apiGroup User
+ * 
+ * @apiParam {String} name First name of the user
+ * @apiParam {String} username username of the user
+ * @apiParam {String} password password of the user
+ * @apiParam {String} street street of the user's adress
+ * @apiParam {String} streetNumber street's number of the user's adress
+ * @apiParam {Number} npa npa number of the user's adress
+ * @apiParam {String} city city of the user's adress
+ * @apiParam {Date} birthDate date of birth of the user
+ * @apiParam {String} description description of the user
+ * @apiParam {Array} tag table of centers of interests
  */
 router.post('', function(req, res, next) {
     new User(req.body).save(function(err, saveduser) {
@@ -86,6 +125,11 @@ router.post('', function(req, res, next) {
 });
 /**
  * Delete an user
+ * @api {delete} /users/:id Delete an existing user
+ * @apiName deleteUser
+ * @apiGroup User
+ *
+ * @apiParam {Number} id Unique identifier of the user
  */
 router.delete('/:id', loadUserById, function(req, res, next) {
     req.user.delete(function(err) {
@@ -109,7 +153,7 @@ function loadUserById(req, res, next){
         return userNotFound(res, userId);
     }
 
-    let query = userModel.findById(userId)
+    let query = user.findById(userId)
 
     query.exec(function(err, user) {
         if (err) {
