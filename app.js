@@ -12,7 +12,7 @@ var picturesRouter = require('./routes/pictures');
 var app = express();
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://localhost/GeekFeelingsTest');
+mongoose.connect('mongodb://localhost/geekFeelings');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

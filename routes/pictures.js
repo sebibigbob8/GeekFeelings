@@ -2,18 +2,18 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Picture = require('../models/picture');
-let pictureModel = MONGOOSE.model('Picture',Picture.schema);
 const ObjectId = mongoose.Types.ObjectId;
 
 /* GET users listing. */
-/**
-router.get('/:id', function(req, res, next) {
+
+router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
+    //console.log("caca");
     res.send(req.picture);
 });
-*/
+
 
 router.get('/', function(req, res, next) {
-    
+    console.log("ici");
     //Count total pictures matching the URL query parameters
     const countQuery = queryPictures(req);
     countQuery.count(function(err, total) {
@@ -38,7 +38,7 @@ router.get('/', function(req, res, next) {
 
 /**
 * Modify a picture
-
+*/
 router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
     
     //Verify if the description is undefined
@@ -47,47 +47,49 @@ router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
         req.picture.description = req.body.description;
     }
     
-    req.picture.save(function(err, savePicture) {
+    if(req.body.src !== undefined) {
+        req.picture.src = req.body.src;
+    }
+    
+    req.picture.save(function(err, savedPicture) {
         if(err) {
             return next(err);
         }
-    })
-    
-    debug(`Updated picture "${savedPicture.description}`);
+    console.log("ok");
+    console.log(`Updated picture "${savedPicture.title}`);
     res.send(savedPicture);
+    });
 });
 
-router.post('/', function(req, res, next) {
+router.post('', function(req, res, next) {
     /**
      * Create a picture
-     
-    new.Picture(req.body).save(function(err, savedPicture){
+     */
+    new Picture(req.body).save(function(err, savedPicture){
     if (err) {
         return next(err);
     }
     
-    debug(`Created picture "${savedPicture.src}"`);
+    console.log(`Created picture "${savedPicture.src}"`);
     
-    res
-        .status(201)
-        .send(savedPicture);
+    res.status(201).send(savedPicture);
     });    
     
 });
 
 
-router.delete('/:id', loadPictureById function(req, res, next) {
+router.delete('/:id', loadPictureFromParamsMiddleware, function(req, res, next) {
      
     req.picture.delete(function(err) {
         if (err) {
             return next(err);
         }
-        debug(`Deleted picture "${req.picture.src}`);
+        console.log(`Deleted picture "${req.picture.src}`);
         res.sendStatus(204);
     }) ;
 });
 
-*/
+
 function queryPictures(req) {
 
     let query = Picture.find();
@@ -103,7 +105,6 @@ function queryPictures(req) {
     return query;
 }
 
-/**
 function loadPictureFromParamsMiddleware(req,res,next) {
     
     const pictureId = req.params.id;
@@ -125,11 +126,9 @@ function loadPictureFromParamsMiddleware(req,res,next) {
     });
 }
 
-
 function pictureNotFound(res, movieId) {
   return res.status(404).type('text').send(`No picture found with ID ${pictureId}`);
 }
 
-*/
 
 module.exports = router;
