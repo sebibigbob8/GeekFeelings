@@ -2,21 +2,23 @@ const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 const Picture = require('../models/picture');
+let pictureModel = MONGOOSE.model('Picture',Picture.schema);
 const ObjectId = mongoose.Types.ObjectId;
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
+/**
+router.get('/:id', function(req, res, next) {
     res.send(req.picture);
 });
+*/
 
-
-router.get('/:id',loadPicturesById function(req, res, next) {
+router.get('/', function(req, res, next) {
     
     //Count total pictures matching the URL query parameters
     const countQuery = queryPictures(req);
     countQuery.count(function(err, total) {
         if(err) {
-            console.warn("Could not get all pictures")
+            console.warn("Could not get all pictures");
             return next(err);
         }
     
@@ -30,17 +32,13 @@ router.get('/:id',loadPicturesById function(req, res, next) {
             }
             
             res.send(pictures);
-        })
-        
-    })
-    /**
-     * Get a picture
-     */
+        });
+    });
 });
 
 /**
 * Modify a picture
-*/
+
 router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
     
     //Verify if the description is undefined
@@ -62,7 +60,7 @@ router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
 router.post('/', function(req, res, next) {
     /**
      * Create a picture
-     */
+     
     new.Picture(req.body).save(function(err, savedPicture){
     if (err) {
         return next(err);
@@ -79,9 +77,7 @@ router.post('/', function(req, res, next) {
 
 
 router.delete('/:id', loadPictureById function(req, res, next) {
-    /**
-     * Delete a picture
-     */
+     
     req.picture.delete(function(err) {
         if (err) {
             return next(err);
@@ -91,7 +87,23 @@ router.delete('/:id', loadPictureById function(req, res, next) {
     }) ;
 });
 
+*/
+function queryPictures(req) {
 
+    let query = Picture.find();
+    
+    if (typeof(req.query.src) == 'string') {
+        query = query.where('src').equals(req.query.src);
+    }
+
+    if (typeof(req.query.description) == 'string') {
+        query = query.where('description').equals(req.query.description);
+    }
+
+    return query;
+}
+
+/**
 function loadPictureFromParamsMiddleware(req,res,next) {
     
     const pictureId = req.params.id;
@@ -118,6 +130,6 @@ function pictureNotFound(res, movieId) {
   return res.status(404).type('text').send(`No picture found with ID ${pictureId}`);
 }
 
-
+*/
 
 module.exports = router;
