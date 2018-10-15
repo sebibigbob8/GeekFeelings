@@ -6,19 +6,36 @@ let userModel = MONGOOSE.model('User',User.schema);
 const ObjectId = MONGOOSE.Types.ObjectId;
 /**
  * Get all users
+ * Pagination depending of the amount of users and the client's needs
  */
 router.get('/', function(req, res, next) {
     let query = userModel.find({});
-    query.exec(function (err,docs)
-    {
-        if (err)
+    userModel.find().count(function(err, total) {
+        if (err) { return next(err); };
+        let query = userModel.find();
+        // Parse the "page" param (default to 1 if invalid)
+        let page = parseInt(req.query.page, 10);
+        if (isNaN(page) || page < 1) { page=1; }
+        // Parse the "pageSize" param (default to 100 if invalid)
+        let pageSize = parseInt(req.query.pageSize, 10);
+        if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) { pageSize=30; }
+        // Apply skip and limit to select the correct page of elements
+        query = query.skip((page - 1) * pageSize).limit(pageSize);
+        query.exec(function (err,docs)
         {
-            console.warn("Could not get all users");
-            next(err); //Fait suivre le message d'erreur
-        }else{
-            res.send(docs); //Renvoi des data
-        }
-    })
+            if (err)
+            {
+                next(err);
+            }else{
+                res.send({
+                    page: page,
+                    pageSize: pageSize,
+                    total: total,
+                    data: docs
+                });
+            }
+        })
+    });
 });
 /**
  * Get a user specified
@@ -99,8 +116,7 @@ function loadUserById(req, res, next){
             console.warn("Could not get the user");
             next(err); //Fait suivre le message d'erreur
         } else if (!user) {
-            //TODO
-            //return userNotFound(res, userId);
+            return userNotFound(res, userId);
         }
         req.user = user;
         next();
