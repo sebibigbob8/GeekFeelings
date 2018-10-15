@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const MONGOOSE = require('mongoose');
 const User = require('../models/user');
-let user = MONGOOSE.model('User',User.schema);
+const bcrypt = require('bcryptjs');
 const ObjectId = MONGOOSE.Types.ObjectId;
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
@@ -99,6 +99,7 @@ router.patch('/:id',loadUserById,function(req, res, next) {
 });
 /**
  * Create an user
+ * Use of Bcrypt to protect the password
  * @api {post} /users Create a new user
  * @apiName createUser
  * @apiGroup User
@@ -115,12 +116,17 @@ router.patch('/:id',loadUserById,function(req, res, next) {
  * @apiParam {Array} tag table of centers of interests
  */
 router.post('', function(req, res, next) {
-    new User(req.body).save(function(err, saveduser) {
-        if (err) {
-            return next(err);
-        }
-        console.log(`Created user "${saveduser}"`);
-        res.status(201).send(saveduser);
+    const plainPassword = req.body.password;
+    const saltRounds = 10;
+    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+        req.body.password = hashedPassword;
+        new User(req.body).save(function(err, saveduser) {
+            if (err) {
+                return next(err);
+            }
+            console.log(`Created user "${saveduser}"`);
+            res.status(201).send(saveduser.username+"Successfully created");
+        });
     });
 });
 /**
@@ -145,7 +151,6 @@ router.delete('/:id', loadUserById, function(req, res, next) {
  * @param req
  * @param res
  * @param next
- * @returns {*}
  */
 function loadUserById(req, res, next){
     const userId = req.params.id;
@@ -170,7 +175,6 @@ function loadUserById(req, res, next){
  * Message in case of an "not found"
  * @param res
  * @param userId
- * @returns {*}
  */
 function userNotFound(res, userId) {
     return res.status(404).type('text').send(`No user found with ID ${userId}`);
