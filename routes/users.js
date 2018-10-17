@@ -4,6 +4,8 @@ const MONGOOSE = require('mongoose');
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const ObjectId = MONGOOSE.Types.ObjectId;
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
  * @api {get} /users Request all users
@@ -72,7 +74,10 @@ router.get('/:id',loadUserById, function(req, res, next) {
  *
  * @apiUse userJSON
  */
-router.patch('/:id',loadUserById,function(req, res, next) {
+router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
+    if (req.currentUserId !== req.params.id) {
+        return res.status(403).send('Please mind your own things.')
+    }
     if (req.body.street !== undefined) {
         req.user.street = req.body.street;
     }
@@ -153,17 +158,14 @@ router.delete('/:id', loadUserById, function(req, res, next) {
  * @param next
  */
 function loadUserById(req, res, next){
-    const userId = req.params.id;
+    let userId = req.params.id;
     if (!ObjectId.isValid(userId)) {
         return userNotFound(res, userId);
     }
-
-    let query = user.findById(userId)
-
+    let query = User.findById(userId)
     query.exec(function(err, user) {
         if (err) {
-            console.warn("Could not get the user");
-            next(err); //Fait suivre le message d'erreur
+            next(err);
         } else if (!user) {
             return userNotFound(res, userId);
         }
@@ -178,5 +180,35 @@ function loadUserById(req, res, next){
  */
 function userNotFound(res, userId) {
     return res.status(404).type('text').send(`No user found with ID ${userId}`);
+}
+
+/**
+ * Test the token
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*|void}
+ */
+function authenticate(req, res, next) {
+    // Ensure the header is present.
+    const authorization = req.get('Authorization');
+    if (!authorization) {
+        return res.status(401).send('Authorization header is missing');
+    }
+    // Check that the header has the correct format.
+    const match = authorization.match(/^Bearer (.+)$/);
+    if (!match) {
+        return res.status(401).send('Authorization header is not a bearer token');
+    }
+    // Extract and verify the JWT.
+    const token = match[1];
+    jwt.verify(token, secretKey, function(err, payload) {
+        if (err) {
+            return res.status(401).send('Your token is invalid or has expired');
+        } else {
+            req.currentUserId = payload.sub;
+            next(); // Pass the ID of the authenticated user to the next middleware.
+        }
+    });
 }
 module.exports = router;
