@@ -126,7 +126,7 @@ function loadPictureFromParamsMiddleware(req,res,next) {
     });
 }
 
-function pictureNotFound(res, movieId) {
+function pictureNotFound(res, pictureId) {
   return res.status(404).type('text').send(`No picture found with ID ${pictureId}`);
 }
 
