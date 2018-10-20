@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const MONGOOSE = require('mongoose');
+const MONGOOSE = require('mongoose').set('debug', true);
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const ObjectId = MONGOOSE.Types.ObjectId;
@@ -12,36 +12,68 @@ const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
  * @apiName GetUsers
  * @apiGroup User
  *
+ * @apiParam (URL query parameters) {number} [ageMin] Select only users older than it.
+ * @apiParam (URL query parameters) {number} [ageMax] Select only users younger than it.
  * @apiUse userJSON
  */
 router.get('/', function(req, res, next) {
-    let query = User.find({});
     User.find().count(function(err, total) {
-        if (err) { return next(err); };
-        let query = User.find();
-        // Parse the "page" param (default to 1 if invalid)
-        let page = parseInt(req.query.page, 10);
-        if (isNaN(page) || page < 1) { page=1; }
-        // Parse the "pageSize" param (default to 100 if invalid)
-        let pageSize = parseInt(req.query.pageSize, 10);
-        if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) { pageSize=30; }
-        // Apply skip and limit to select the correct page of elements
-        query = query.skip((page - 1) * pageSize).limit(pageSize);
-        query.exec(function (err,docs)
+    if (err) { return next(err); };
+    let query = User.find();
+    //Filters
+    if (!isNaN(req.query.gender)) {
+        query = query.where('gender').equals(req.query.gender);
+    }
+    //TODO : How to optimize that ?
+    if (!isNaN(req.query.ageMin) && !isNaN(req.query.ageMax)) {
+        let today = new Date();
+        let dateMin = new Date();
+        let dateMax = new Date();
+        dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
+        dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
+        query = query.where('dateBirth').gte(dateMin.toISOString()).lte(dateMax.toISOString());
+        console.log(dateMin.toISOString());
+        console.log(dateMax.toISOString());
+    }
+    if(isNan(req.query.ageMin && !isNan(req.query.ageMax)) )
+    {
+        let today = new Date();
+        let dateMin = new Date();
+        let dateMax = new Date();
+        dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
+        dateMax.setFullYear(today.getFullYear());
+    }
+    if(!isNan(req.query.ageMin && isNan(req.query.ageMax)) )
+    {
+        let today = new Date();
+        let dateMin = new Date();
+        let dateMax = new Date();
+        dateMin.setFullYear(today.getFullYear() - 100);
+        dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
+    }
+    // Parse the "page" param (default to 1 if invalid)
+    let page = parseInt(req.query.page, 10);
+    if (isNaN(page) || page < 1) { page=1; }
+    // Parse the "pageSize" param (default to 100 if invalid)
+    let pageSize = parseInt(req.query.pageSize, 10);
+    if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) { pageSize=30; }
+    // Apply skip and limit to select the correct page of elements
+    query = query.skip((page - 1) * pageSize).limit(pageSize);
+    query.exec(function (err,docs)
+    {
+        if (err)
         {
-            if (err)
-            {
-                next(err);
-            }else{
-                res.send({
-                    page: page,
-                    pageSize: pageSize,
-                    total: total,
-                    data: docs
-                });
-            }
-        })
-    });
+            next(err);
+        }else{
+            res.send({
+                page: page,
+                pageSize: pageSize,
+                total: total,
+                data: docs
+            });
+        }
+    })
+});
 });
 /**
  * Get a user specified
