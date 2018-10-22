@@ -52,5 +52,20 @@ const userSchema = new Schema({
 });
 userSchema.plugin(softDelete);
 userSchema.plugin(softDelete, { overrideMethods: 'all' });
+
+/**
+ * Give all pictures
+ */
+function myPictures()
+{
+
+}
+/**
+ * Give all Rdvs
+ */
+function myRdvs()
+{
+
+}
 // Create the model from the schema and export it
 module.exports = mongoose.model('User', userSchema);
