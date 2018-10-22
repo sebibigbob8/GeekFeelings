@@ -35,7 +35,7 @@ router.get('/', function(req, res, next) {
         console.log(dateMin.toISOString());
         console.log(dateMax.toISOString());
     }
-    if(isNan(req.query.ageMin && !isNan(req.query.ageMax)) )
+    /*if(isNan(req.query.ageMin) && !isNan(req.query.ageMax)) )
     {
         let today = new Date();
         let dateMin = new Date();
@@ -43,14 +43,14 @@ router.get('/', function(req, res, next) {
         dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
         dateMax.setFullYear(today.getFullYear());
     }
-    if(!isNan(req.query.ageMin && isNan(req.query.ageMax)) )
+    if(!isNan(req.query.ageMin) && isNan(req.query.ageMax)) )
     {
         let today = new Date();
         let dateMin = new Date();
         let dateMax = new Date();
         dateMin.setFullYear(today.getFullYear() - 100);
         dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
-    }
+    }*/
     // Parse the "page" param (default to 1 if invalid)
     let page = parseInt(req.query.page, 10);
     if (isNaN(page) || page < 1) { page=1; }
