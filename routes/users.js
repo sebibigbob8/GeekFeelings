@@ -1,45 +1,79 @@
 var express = require('express');
 var router = express.Router();
-const MONGOOSE = require('mongoose');
+const MONGOOSE = require('mongoose').set('debug', true);
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const ObjectId = MONGOOSE.Types.ObjectId;
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
  * @api {get} /users Request all users
  * @apiName GetUsers
  * @apiGroup User
  *
+ * @apiParam (URL query parameters) {number} [ageMin] Select only users older than it.
+ * @apiParam (URL query parameters) {number} [ageMax] Select only users younger than it.
  * @apiUse userJSON
  */
 router.get('/', function(req, res, next) {
-    let query = User.find({});
     User.find().count(function(err, total) {
-        if (err) { return next(err); };
-        let query = User.find();
-        // Parse the "page" param (default to 1 if invalid)
-        let page = parseInt(req.query.page, 10);
-        if (isNaN(page) || page < 1) { page=1; }
-        // Parse the "pageSize" param (default to 100 if invalid)
-        let pageSize = parseInt(req.query.pageSize, 10);
-        if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) { pageSize=30; }
-        // Apply skip and limit to select the correct page of elements
-        query = query.skip((page - 1) * pageSize).limit(pageSize);
-        query.exec(function (err,docs)
+    if (err) { return next(err); };
+    let query = User.find();
+    //Filters
+    if (!isNaN(req.query.gender)) {
+        query = query.where('gender').equals(req.query.gender);
+    }
+    //TODO : How to optimize that ?
+    if (!isNaN(req.query.ageMin) && !isNaN(req.query.ageMax)) {
+        let today = new Date();
+        let dateMin = new Date();
+        let dateMax = new Date();
+        dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
+        dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
+        query = query.where('dateBirth').gte(dateMin.toISOString()).lte(dateMax.toISOString());
+        console.log(dateMin.toISOString());
+        console.log(dateMax.toISOString());
+    }
+    /*if(isNan(req.query.ageMin) && !isNan(req.query.ageMax)) )
+    {
+        let today = new Date();
+        let dateMin = new Date();
+        let dateMax = new Date();
+        dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
+        dateMax.setFullYear(today.getFullYear());
+    }
+    if(!isNan(req.query.ageMin) && isNan(req.query.ageMax)) )
+    {
+        let today = new Date();
+        let dateMin = new Date();
+        let dateMax = new Date();
+        dateMin.setFullYear(today.getFullYear() - 100);
+        dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
+    }*/
+    // Parse the "page" param (default to 1 if invalid)
+    let page = parseInt(req.query.page, 10);
+    if (isNaN(page) || page < 1) { page=1; }
+    // Parse the "pageSize" param (default to 100 if invalid)
+    let pageSize = parseInt(req.query.pageSize, 10);
+    if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) { pageSize=30; }
+    // Apply skip and limit to select the correct page of elements
+    query = query.skip((page - 1) * pageSize).limit(pageSize);
+    query.exec(function (err,docs)
+    {
+        if (err)
         {
-            if (err)
-            {
-                next(err);
-            }else{
-                res.send({
-                    page: page,
-                    pageSize: pageSize,
-                    total: total,
-                    data: docs
-                });
-            }
-        })
-    });
+            next(err);
+        }else{
+            res.send({
+                page: page,
+                pageSize: pageSize,
+                total: total,
+                data: docs
+            });
+        }
+    })
+});
 });
 /**
  * Get a user specified
@@ -72,7 +106,10 @@ router.get('/:id',loadUserById, function(req, res, next) {
  *
  * @apiUse userJSON
  */
-router.patch('/:id',loadUserById,function(req, res, next) {
+router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
+    if (req.currentUserId !== req.params.id) {
+        return res.status(403).send('Please mind your own things.')
+    }
     if (req.body.street !== undefined) {
         req.user.street = req.body.street;
     }
@@ -125,7 +162,7 @@ router.post('', function(req, res, next) {
                 return next(err);
             }
             console.log(`Created user "${saveduser}"`);
-            res.status(201).send(saveduser.username+"Successfully created");
+            res.status(201).send(saveduser.username+" Successfully created");
         });
     });
 });
@@ -153,17 +190,14 @@ router.delete('/:id', loadUserById, function(req, res, next) {
  * @param next
  */
 function loadUserById(req, res, next){
-    const userId = req.params.id;
+    let userId = req.params.id;
     if (!ObjectId.isValid(userId)) {
         return userNotFound(res, userId);
     }
-
-    let query = user.findById(userId)
-
+    let query = User.findById(userId)
     query.exec(function(err, user) {
         if (err) {
-            console.warn("Could not get the user");
-            next(err); //Fait suivre le message d'erreur
+            next(err);
         } else if (!user) {
             return userNotFound(res, userId);
         }
@@ -178,5 +212,35 @@ function loadUserById(req, res, next){
  */
 function userNotFound(res, userId) {
     return res.status(404).type('text').send(`No user found with ID ${userId}`);
+}
+
+/**
+ * Test the token
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*|void}
+ */
+function authenticate(req, res, next) {
+    // Ensure the header is present.
+    const authorization = req.get('Authorization');
+    if (!authorization) {
+        return res.status(401).send('Authorization header is missing');
+    }
+    // Check that the header has the correct format.
+    const match = authorization.match(/^Bearer (.+)$/);
+    if (!match) {
+        return res.status(401).send('Authorization header is not a bearer token');
+    }
+    // Extract and verify the JWT.
+    const token = match[1];
+    jwt.verify(token, secretKey, function(err, payload) {
+        if (err) {
+            return res.status(401).send('Your token is invalid or has expired');
+        } else {
+            req.currentUserId = payload.sub;
+            next(); // Pass the ID of the authenticated user to the next middleware.
+        }
+    });
 }
 module.exports = router;
