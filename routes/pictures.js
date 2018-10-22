@@ -4,16 +4,29 @@ const router = express.Router();
 const Picture = require('../models/picture');
 const ObjectId = mongoose.Types.ObjectId;
 
-/* GET users listing. */
 
+/**
+ * Get all pictures
+ * @api {get} /pictures/:id Get a picture
+ * @apiName GetPicture
+ * @apiGroup Picture
+ * @apiDescription Get one movie.
+ */
 router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
-    //console.log("caca");
     res.send(req.picture);
 });
 
 
+
+/**
+ * @api {get} /pictures List pictures
+ * @apiName GetPictures
+ * @apiGroup Picture
+ * @apiVersion 1.0.0
+ * @apiDescription Get all the movies.
+ *
+ */
 router.get('/', function(req, res, next) {
-    console.log("ici");
     //Count total pictures matching the URL query parameters
     const countQuery = queryPictures(req);
     countQuery.count(function(err, total) {
@@ -36,9 +49,14 @@ router.get('/', function(req, res, next) {
     });
 });
 
+
 /**
-* Modify a picture
-*/
+ * @api {patch} /pictures/:id Partially update a picture
+ * @apiName PartiallyUpdatePicture
+ * @apiGroup Picture
+ * @apiDescription Partially updates a picture's data (only the properties found in the request body will be updated).
+ * All properties are optional.
+ */
 router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
     
     //Verify if the description is undefined
@@ -55,11 +73,19 @@ router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
         if(err) {
             return next(err);
         }
-    console.log("ok");
     console.log(`Updated picture "${savedPicture.title}`);
     res.send(savedPicture);
     });
 });
+
+
+/**
+ * @api {post} /pictures Create a picture
+ * @apiName CreatePicture
+ * @apiGroup Picture
+ * @apiDescription Registers a new picture.
+ *
+ */
 
 router.post('', function(req, res, next) {
     /**
@@ -78,6 +104,12 @@ router.post('', function(req, res, next) {
 });
 
 
+/**
+ * @api {delete} /pictures/:id Delete a picture
+ * @apiName DeletePicture
+ * @apiGroup Picture
+ * @apiDescription Permanently deletes a picture.
+ */
 router.delete('/:id', loadPictureFromParamsMiddleware, function(req, res, next) {
      
     req.picture.delete(function(err) {
@@ -90,6 +122,10 @@ router.delete('/:id', loadPictureFromParamsMiddleware, function(req, res, next) 
 });
 
 
+
+/**
+ * Returns a Mongoose query that will retrieve pictures
+ */
 function queryPictures(req) {
 
     let query = Picture.find();
@@ -105,6 +141,11 @@ function queryPictures(req) {
     return query;
 }
 
+
+/**
+ * Middleware that loads the picture
+ * Responds with 404 Not Found if the ID is not valid or the movie doesn't exist.
+ */
 function loadPictureFromParamsMiddleware(req,res,next) {
     
     const pictureId = req.params.id;
@@ -126,6 +167,10 @@ function loadPictureFromParamsMiddleware(req,res,next) {
     });
 }
 
+
+/**
+ * Responds with 404 Not Found and a message indicating that the movie with the specified ID was not found.
+ */
 function pictureNotFound(res, pictureId) {
   return res.status(404).type('text').send(`No picture found with ID ${pictureId}`);
 }
