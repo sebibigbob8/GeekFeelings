@@ -22,13 +22,4 @@ const pictureSchema = new Schema({
     
 });
 
-/**
-function validatePictureUniquess(value, callback){
-    const image = this;
-    this.constructor.findOne().where('src').equals(value).exec(function(err, existingImg) {
-        callback(!err && (!existingImg || existingImg._id.equals(img._id)));
-    });
-}
-*/
-// Create the model from the schema and export it
 module.exports = mongoose.model('Picture', pictureSchema);
