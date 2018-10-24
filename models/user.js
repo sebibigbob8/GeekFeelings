@@ -18,6 +18,10 @@ const userSchema = new Schema({
         min: 6,
         select: false
     },
+    gender :  {
+        type: String,
+        enum:['male','female','other']
+    },
     street : {
         type : String,
         required: true

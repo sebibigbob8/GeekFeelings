@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const ObjectId = MONGOOSE.Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
+//TODO : Pourquoi nodemon ne lance pas express ?
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
  * @api {get} /users Request all users
@@ -15,6 +16,45 @@ const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
  * @apiParam (URL query parameters) {number} [ageMin] Select only users older than it.
  * @apiParam (URL query parameters) {number} [ageMax] Select only users younger than it.
  * @apiUse userJSON
+ *
+ *  @apiExample Example
+ *     GET /api/users?pageSize=2 HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *   {
+ *      "page": 1,
+ *       "pageSize": 1,
+ *       "total": 100,
+ *       "data": [
+ *           {
+ *               "tag": [],
+ *               "_id": "5bd025513b4861db3e59205f",
+ *               "name": "Gerianne",
+ *               "username": "gpengilly2",
+ *               "gender": "female",
+ *               "street": "Bonner",
+ *               "streetNumber": "4",
+ *               "npa": 9855,
+ *               "city": "Santa Ignacia",
+ *               "dateBirth": "1962-04-10T22:57:50.000Z",
+ *               "description": "Duis mattis egestas metus. Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est."
+ *           },
+ *           {
+ *               "tag": [],
+ *               "_id": "5bd025513b4861db3e592060",
+ *               "name": "Brianna",
+ *               "username": "bjeeves3",
+ *               "gender": "other",
+ *               "street": "Hansons",
+ *               "streetNumber": "1",
+ *               "npa": 1879,
+ *               "city": "Chengxi",
+ *               "dateBirth": "1971-09-18T15:23:43.000Z",
+ *               "description": "Morbi vel lectus in quam fringilla rhoncus. Mauris enim leo, rhoncus sed, vestibulum sit amet, cursus id, turpis. Integer aliquet, massa id lobortis convallis, tortor risus dapibus augue, vel accumsan tellus nisi eu orci. Mauris lacinia sapien quis libero. Nullam sit amet turpis elementum ligula vehicula consequat."
+ *           }
+ *       ]}
  */
 router.get('/', function(req, res, next) {
     User.find().count(function(err, total) {
@@ -24,7 +64,7 @@ router.get('/', function(req, res, next) {
     if (!isNaN(req.query.gender)) {
         query = query.where('gender').equals(req.query.gender);
     }
-    //TODO : How to optimize that ?
+    //TODO : How to optimize that ? AND DEBUG, see if the format of the db is correct
     if (!isNaN(req.query.ageMin) && !isNaN(req.query.ageMax)) {
         let today = new Date();
         let dateMin = new Date();
@@ -93,6 +133,26 @@ router.get('/', function(req, res, next) {
  * @apiSuccess {Date} birthDate date of birth of the user
  * @apiSuccess {String} description description of the user
  * @apiSuccess {Array} tag table of centers of interests
+ *
+ * @apiExample Example
+ * GET /api/users/5bd025513b4861db3e592062 HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *   {
+ *       "tag": [],
+ *       "_id": "5bd025513b4861db3e59205f",
+ *       "name": "Gerianne",
+ *       "username": "gpengilly2",
+ *       "gender": "female",
+ *       "street": "Bonner",
+ *       "streetNumber": "4",
+ *       "npa": 9855,
+ *       "city": "Santa Ignacia",
+ *       "dateBirth": "1962-04-10T22:57:50.000Z",
+ *       "description": "Duis mattis egestas metus. Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est."
+ *   }
  */
 router.get('/:id',loadUserById, function(req, res, next) {
     res.send(req.user);
@@ -105,6 +165,31 @@ router.get('/:id',loadUserById, function(req, res, next) {
  * @apiParam {Number} id Unique identifier of the user
  *
  * @apiUse userJSON
+ *
+ * @apiExample Example
+ *     PATCH /users/58b2926f5e1def0123e97281 HTTP/1.1
+ *     Content-Type: application/json
+ *
+ *     {
+ *       "description": "NEW MICHEAL JACKSON"
+ *     }
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *   {
+ *       "tag": [],
+ *       "_id": "58b2926f5e1def0123e97281",
+ *       "name": "Gerianne",
+ *       "username": "gpengilly2",
+ *       "gender": "female",
+ *       "street": "Bonner",
+ *       "streetNumber": "4",
+ *       "npa": 9855,
+ *       "city": "Santa Ignacia",
+ *       "dateBirth": "1962-04-10T22:57:50.000Z",
+ *       "description": "NEW MICHEAL JACKSON"
+ *   }
  */
 router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
     if (req.currentUserId !== req.params.id) {
@@ -151,6 +236,29 @@ router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
  * @apiParam {Date} birthDate date of birth of the user
  * @apiParam {String} description description of the user
  * @apiParam {Array} tag table of centers of interests
+ *
+ *@apiExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *   {
+ *       "tag": ["Patinage","pole dance"],
+ *       "name": "Niska",
+ *       "username": "grigny91",
+ *       "gender": "other",
+ *       "street": "eqwer",
+ *       "streetNumber": "4",
+ *       "npa": 9855,
+ *       "city": "Santa monica",
+ *       "dateBirth": "1991-04-10T22:57:50.000Z",
+ *       "description": "W.L.G"
+ *   }
+ *
+ *  @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *  {
+ *      grigny91 Successfully created
+ *  }
  */
 router.post('', function(req, res, next) {
     const plainPassword = req.body.password;
@@ -173,6 +281,13 @@ router.post('', function(req, res, next) {
  * @apiGroup User
  *
  * @apiParam {Number} id Unique identifier of the user
+ *
+ * @apiExample Example
+ *     DELETE /users/5bd025513b4861db3e592062 HTTP/1.1
+ *
+ * @apiSuccessExample 204 No Content
+ *     HTTP/1.1 204 No Content
+ *
  */
 router.delete('/:id', loadUserById, function(req, res, next) {
     req.user.delete(function(err) {
