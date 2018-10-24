@@ -3,6 +3,9 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Picture = require('../models/picture');
 const ObjectId = mongoose.Types.ObjectId;
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 
 
 /**
@@ -11,6 +14,8 @@ const ObjectId = mongoose.Types.ObjectId;
  * @apiName GetPicture
  * @apiGroup Picture
  * @apiDescription Get one movie.
+ *
+ *@apiExample
  */
 router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
     res.send(req.picture);
