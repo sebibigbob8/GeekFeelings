@@ -6,7 +6,6 @@ const bcrypt = require('bcryptjs');
 const ObjectId = MONGOOSE.Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
-//TODO : Pourquoi nodemon ne lance pas express ?
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
  * @api {get} /users Request all users
@@ -64,7 +63,7 @@ router.get('/', function(req, res, next) {
     if (!isNaN(req.query.gender)) {
         query = query.where('gender').equals(req.query.gender);
     }
-    //TODO : How to optimize that ? AND DEBUG, see if the format of the db is correct
+    //TODO : How to optimize that ?
     if (!isNaN(req.query.ageMin) && !isNaN(req.query.ageMax)) {
         let today = new Date();
         let dateMin = new Date();
