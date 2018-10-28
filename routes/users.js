@@ -60,17 +60,22 @@ router.get('/', function(req, res, next) {
     if (err) { return next(err); };
     let query = User.find();
     //Filters
-    if (!isNaN(req.query.gender)) {
-        query = query.where('gender').equals(req.query.gender);
+    if (typeof req.query.gender !== 'undefined') {
+        query = query.where('gender',req.query.gender);
     }
-    //TODO : How to optimize that ?
-    if (!isNaN(req.query.ageMin) && !isNaN(req.query.ageMax)) {
+    if (typeof req.query.npa !== 'undefined') {
+        console.log("Im here");
+        query = query.where('npa',req.query.npa);
+    }
+
+    //TODO : How to manipulate ISOdate with mongoose(Seems that he transform automaticaly ISO date to other format)? How to optimize that ?
+    if (typeof req.query.ageMin !== 'undefined' && typeof req.query.ageMax !== 'undefined') {
         let today = new Date();
         let dateMin = new Date();
         let dateMax = new Date();
         dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
         dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
-        query = query.where('dateBirth').gte(dateMin.toISOString()).lte(dateMax.toISOString());
+        query = User.find({dateBirth:{"$gte":new Date(dateMin.toISOString())}});
         console.log(dateMin.toISOString());
         console.log(dateMax.toISOString());
     }
@@ -104,7 +109,7 @@ router.get('/', function(req, res, next) {
         {
             next(err);
         }else{
-            res.send({
+            res.status(200).send({
                 page: page,
                 pageSize: pageSize,
                 total: total,
@@ -154,7 +159,7 @@ router.get('/', function(req, res, next) {
  *   }
  */
 router.get('/:id',loadUserById, function(req, res, next) {
-    res.send(req.user);
+    res.status(200).send(req.user);
 });
 /**
  * Modify an user
@@ -215,7 +220,7 @@ router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
             return next(err);
         }
         console.log(`Updated user "${savedUser.title}"`);
-        res.send(savedUser);
+        res.status(200).send(savedUser);
     });
 });
 /**
@@ -252,8 +257,8 @@ router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
  *       "description": "W.L.G"
  *   }
  *
- *  @apiSuccessExample 200 OK
- *     HTTP/1.1 200 OK
+ *  @apiSuccessExample 201 OK
+ *     HTTP/1.1 201 OK
  *     Content-Type: application/json
  *  {
  *      grigny91 Successfully created
