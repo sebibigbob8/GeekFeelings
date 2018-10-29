@@ -3,9 +3,6 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const Picture = require('../models/picture');
 const ObjectId = mongoose.Types.ObjectId;
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 
 
 /**
