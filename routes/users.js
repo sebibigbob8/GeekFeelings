@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const ObjectId = MONGOOSE.Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
+const login = require("./login");
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
  * @api {get} /users Request all users
@@ -55,69 +56,74 @@ const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
  *           }
  *       ]}
  */
-router.get('/', function(req, res, next) {
-    User.find().count(function(err, total) {
-    if (err) { return next(err); };
-    let query = User.find();
-    //Filters
-    if (typeof req.query.gender !== 'undefined') {
-        query = query.where('gender',req.query.gender);
-    }
-    if (typeof req.query.npa !== 'undefined') {
-        console.log("Im here");
-        query = query.where('npa',req.query.npa);
-    }
-
-    //TODO : How to manipulate ISOdate with mongoose(Seems that he transform automaticaly ISO date to other format)? How to optimize that ?
-    if (typeof req.query.ageMin !== 'undefined' && typeof req.query.ageMax !== 'undefined') {
-        let today = new Date();
-        let dateMin = new Date();
-        let dateMax = new Date();
-        dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
-        dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
-        query = User.find({dateBirth:{"$gte":new Date(dateMin.toISOString())}});
-        console.log(dateMin.toISOString());
-        console.log(dateMax.toISOString());
-    }
-    /*if(isNan(req.query.ageMin) && !isNan(req.query.ageMax)) )
-    {
-        let today = new Date();
-        let dateMin = new Date();
-        let dateMax = new Date();
-        dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
-        dateMax.setFullYear(today.getFullYear());
-    }
-    if(!isNan(req.query.ageMin) && isNan(req.query.ageMax)) )
-    {
-        let today = new Date();
-        let dateMin = new Date();
-        let dateMax = new Date();
-        dateMin.setFullYear(today.getFullYear() - 100);
-        dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
-    }*/
-    // Parse the "page" param (default to 1 if invalid)
-    let page = parseInt(req.query.page, 10);
-    if (isNaN(page) || page < 1) { page=1; }
-    // Parse the "pageSize" param (default to 100 if invalid)
-    let pageSize = parseInt(req.query.pageSize, 10);
-    if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) { pageSize=30; }
-    // Apply skip and limit to select the correct page of elements
-    query = query.skip((page - 1) * pageSize).limit(pageSize);
-    query.exec(function (err,docs)
-    {
-        if (err)
-        {
-            next(err);
-        }else{
-            res.status(200).send({
-                page: page,
-                pageSize: pageSize,
-                total: total,
-                data: docs
-            });
+router.get('/', function (req, res, next) {
+    User.find().count(function (err, total) {
+        if (err) {
+            return next(err);
         }
-    })
-});
+        ;
+        let query = User.find();
+        //Filters
+        if (typeof req.query.gender !== 'undefined') {
+            query = query.where('gender', req.query.gender);
+        }
+        if (typeof req.query.npa !== 'undefined') {
+            console.log("Im here");
+            query = query.where('npa', req.query.npa);
+        }
+
+        //TODO : How to manipulate ISOdate with mongoose(Seems that he transform automaticaly ISO date to other format)? How to optimize that ?
+        if (typeof req.query.ageMin !== 'undefined' && typeof req.query.ageMax !== 'undefined') {
+            let today = new Date();
+            let dateMin = new Date();
+            let dateMax = new Date();
+            dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
+            dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
+            query = User.find({dateBirth: {"$gte": new Date(dateMin.toISOString())}});
+            console.log(dateMin.toISOString());
+            console.log(dateMax.toISOString());
+        }
+        /*if(isNan(req.query.ageMin) && !isNan(req.query.ageMax)) )
+        {
+            let today = new Date();
+            let dateMin = new Date();
+            let dateMax = new Date();
+            dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
+            dateMax.setFullYear(today.getFullYear());
+        }
+        if(!isNan(req.query.ageMin) && isNan(req.query.ageMax)) )
+        {
+            let today = new Date();
+            let dateMin = new Date();
+            let dateMax = new Date();
+            dateMin.setFullYear(today.getFullYear() - 100);
+            dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
+        }*/
+        // Parse the "page" param (default to 1 if invalid)
+        let page = parseInt(req.query.page, 10);
+        if (isNaN(page) || page < 1) {
+            page = 1;
+        }
+        // Parse the "pageSize" param (default to 100 if invalid)
+        let pageSize = parseInt(req.query.pageSize, 10);
+        if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) {
+            pageSize = 30;
+        }
+        // Apply skip and limit to select the correct page of elements
+        query = query.skip((page - 1) * pageSize).limit(pageSize);
+        query.exec(function (err, docs) {
+            if (err) {
+                next(err);
+            } else {
+                res.status(200).send({
+                    page: page,
+                    pageSize: pageSize,
+                    total: total,
+                    data: docs
+                });
+            }
+        })
+    });
 });
 /**
  * Get a user specified
@@ -158,7 +164,7 @@ router.get('/', function(req, res, next) {
  *       "description": "Duis mattis egestas metus. Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est."
  *   }
  */
-router.get('/:id',loadUserById, function(req, res, next) {
+router.get('/:id', loadUserById, function (req, res, next) {
     res.status(200).send(req.user);
 });
 /**
@@ -195,7 +201,7 @@ router.get('/:id',loadUserById, function(req, res, next) {
  *       "description": "NEW MICHEAL JACKSON"
  *   }
  */
-router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
+router.patch('/:id', login.authenticate, loadUserById, function (req, res, next) {
     if (req.currentUserId !== req.params.id) {
         return res.status(403).send('Please mind your own things.')
     }
@@ -215,7 +221,7 @@ router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
         req.user.description = req.body.description;
     }
 
-    req.user.save(function(err, savedUser) {
+    req.user.save(function (err, savedUser) {
         if (err) {
             return next(err);
         }
@@ -229,7 +235,7 @@ router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
  * @api {post} /users Create a new user
  * @apiName createUser
  * @apiGroup User
- * 
+ *
  * @apiParam {String} name First name of the user
  * @apiParam {String} username username of the user
  * @apiParam {String} password password of the user
@@ -264,17 +270,17 @@ router.patch('/:id', authenticate, loadUserById,function(req, res, next) {
  *      grigny91 Successfully created
  *  }
  */
-router.post('', function(req, res, next) {
+router.post('', function (req, res, next) {
     const plainPassword = req.body.password;
     const saltRounds = 10;
-    bcrypt.hash(plainPassword, saltRounds, function(err, hashedPassword) {
+    bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
         req.body.password = hashedPassword;
-        new User(req.body).save(function(err, saveduser) {
+        new User(req.body).save(function (err, saveduser) {
             if (err) {
                 return next(err);
             }
             console.log(`Created user "${saveduser}"`);
-            res.status(201).send(saveduser.username+" Successfully created");
+            res.status(201).send(saveduser.username + " Successfully created");
         });
     });
 });
@@ -293,28 +299,36 @@ router.post('', function(req, res, next) {
  *     HTTP/1.1 204 No Content
  *
  */
-router.delete('/:id', loadUserById, function(req, res, next) {
-    req.user.delete(function(err) {
-        if (err) {
-            return next(err);
-        }
-        console.log(`Deleted movie "${req.user.name}"`);
-        res.sendStatus(204);
-    });
+router.delete('/:id',login.authenticate, loadUserById, function (req, res, next) {
+    let currentUser = User.find({"id" : req.currentUserId});
+    if (currentUser.username !== "admin")
+    {
+        res.status(403).send("Contact an admin");
+    }else{
+        req.user.delete(function (err) {
+            if (err) {
+                return next(err);
+            }
+            console.log(`Deleted movie "${req.user.name}"`);
+            res.sendStatus(204);
+        });
+    }
+
 });
+
 /**
  * Load a user in the Request object depending of params given
  * @param req
  * @param res
  * @param next
  */
-function loadUserById(req, res, next){
+function loadUserById(req, res, next) {
     let userId = req.params.id;
     if (!ObjectId.isValid(userId)) {
         return userNotFound(res, userId);
     }
     let query = User.findById(userId)
-    query.exec(function(err, user) {
+    query.exec(function (err, user) {
         if (err) {
             next(err);
         } else if (!user) {
@@ -324,6 +338,7 @@ function loadUserById(req, res, next){
         next();
     });
 }
+
 /**
  * Message in case of an "not found"
  * @param res
@@ -333,33 +348,4 @@ function userNotFound(res, userId) {
     return res.status(404).type('text').send(`No user found with ID ${userId}`);
 }
 
-/**
- * Test the token
- * @param req
- * @param res
- * @param next
- * @returns {*|void}
- */
-function authenticate(req, res, next) {
-    // Ensure the header is present.
-    const authorization = req.get('Authorization');
-    if (!authorization) {
-        return res.status(401).send('Authorization header is missing');
-    }
-    // Check that the header has the correct format.
-    const match = authorization.match(/^Bearer (.+)$/);
-    if (!match) {
-        return res.status(401).send('Authorization header is not a bearer token');
-    }
-    // Extract and verify the JWT.
-    const token = match[1];
-    jwt.verify(token, secretKey, function(err, payload) {
-        if (err) {
-            return res.status(401).send('Your token is invalid or has expired');
-        } else {
-            req.currentUserId = payload.sub;
-            next(); // Pass the ID of the authenticated user to the next middleware.
-        }
-    });
-}
 module.exports = router;
