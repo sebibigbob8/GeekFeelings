@@ -357,8 +357,8 @@ function getMyPictures(userId)
         if (err) {
             next(err);
         }
-        let userIds = pictures.map(pictureDocs => pictureDocs.user);
-        console.log(pictures);
+        let userIds = pictures.map(pictureDocs => pictureDocs.src);
+        console.log(userIds);
         Picture.aggregate([
             {
                 $match: { // Select movies directed by the people we are interested in
