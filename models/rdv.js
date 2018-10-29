@@ -5,14 +5,28 @@ var softDelete = require('mongoose-delete');
 
 // Define the schema for rdvs
 const rdvSchema = new Schema({
+
+    creator: {
+        type: String,
+        required: true
+    },
+
+    date: {
+      type: Date,
+      required: true
+    },
+
+    guest: {
+        type: String,
+        required: false
+    },
+
     city: {
         type : String,
         required: true
     },
     street: {
         type: String,
-        unique: false,
-        min: 6,
         required: true
     },
     npa :  {

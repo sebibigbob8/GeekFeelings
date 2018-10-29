@@ -53,58 +53,92 @@ const ObjectId = MONGOOSE.Types.ObjectId;
  */
 
 router.get('/', function(req, res, next) {
-        let query = Rdv.find();
-        // Filter rdv by ctiy
-        if (ObjectId.isValid(req.query.city)) {
-          query = query.where('city').equals(req.query.city);
-        }
-        // Filter rdv by category
-        if (ObjectId.isValid(req.query.category)) {
-          query = query.where('category').equals(req.query.category);
-        }
+  let query = Rdv.find();
+  // Filter rdv by ctiy
+  if (typeof req.query.city !== 'undefined') {
+      query = query.where('city', req.query.city);
+  }
+  // Filter rdv by category
+  if (typeof req.query.category !== 'undefined') {
+      query = query.where('category', req.query.category);
+  }
+  // Filter rdv by creator
+  if (typeof req.query.creator !== 'undefined') {
+      query = query.where('creator', req.query.creator);
+  }
 
-        query.exec(function (err,docs)
-        {
-            if (err)
-            {
-                console.warn("Could not get all rdvs");
-                next(err); //Fait suivre le message d'erreur
-            }
-            else
-            {
-                res.send(docs);
-            }
-        });
+//-----------------------------------
+  //Aggregation
 
-
-
+  const people = [ /* List of Person documents from the database */ ];
+// Get the documents' IDs
+const personIds = people.map(person => person._id);
+Movie.aggregate([
+  {
+    $match: { // Select movies directed by the people we are interested in
+      director: { $in: personIds }
+    }
+  },
+  {
+    $group: { // Group the documents by director ID
+      _id: '$director',
+      moviesCount: { // Count the number of movies for that ID
+        $sum: 1
+      }
+    }
+  }
+], function(err, results) {
+  // Use the results...
 });
 
 
-//OK
+const people = [ /* List of Person documents from the database */ ];
+const results = [ /* Aggregation results */ ];
+// Convert the Person documents to JSON
+const peopleJson = people.map(person => person.toJSON());
+// For each result...
+results.forEach(function(result) {
+  // Get the director ID (that was used to $group)...
+  const resultId = result._id.toString();
+  // Find the corresponding person...
+  const correspondingPerson = peopleJson.find(person => person.id == resultId);
+  // And attach the new property
+  correspondingPerson.directedMoviesCount = result.moviesCount;
+});
+// Send the enriched response
+res.send(peopleJson);
 
-/**
- * Get a specified rdv
- */
-router.get('/:id', function(req, res, next) {
-    let query = Rdv.find({});
-    query.exec(function (err,docs)
-    {
-        if (err)
-        {
-            console.warn("Could not get all rdvs");
-            next(err); //Fait suivre le message d'erreur
-        }else{
-            res.send(docs); //Renvoi des data
-        }
-    })
+//-------------------------------------------
+
+  query.exec(function (err,docs){
+      if (err)  {
+        console.warn("Could not get all rdvs");
+        next(err); //Fait suivre le message d'erreur
+      }
+      else{
+        res.send(docs);
+      }
+  });
 });
 
+
 /**
- * Get a rdv
+ * Get a rdv by ID
  */
+
+ //OK
 router.get('/:id',loadRdvById, function(req, res, next) {
-    res.send(req.rdv);
+  let query = Rdv.find({});
+  query.exec(function (err,docs)
+  {
+      if (err)
+      {
+          console.warn("Could not get all rdvs");
+          next(err); //Fait suivre le message d'erreur
+      }else{
+          res.send(docs); //Renvoi des data
+      }
+  });
 });
 
 
