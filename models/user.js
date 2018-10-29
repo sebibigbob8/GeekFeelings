@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 var softDelete = require('mongoose-delete');
-// Define the schema for users
 const userSchema = new Schema({
     name: {
-        type : String,
+        type: String,
         required: true
     },
     username: {
@@ -13,63 +12,49 @@ const userSchema = new Schema({
         min: 6,
         required: true
     },
-    password :  {
+    password: {
         type: String,
         min: 6,
         select: false
     },
-    gender :  {
+    gender: {
         type: String,
-        enum:['male','female','other']
+        enum: ['male', 'female', 'other']
     },
-    street : {
-        type : String,
+    street: {
+        type: String,
         required: true
     },
-    streetNumber : {
-        type : String,
+    streetNumber: {
+        type: String,
         required: true
     },
-    npa : {
-        type : Number,
-        min : 1000,
-        max : 9999,
+    npa: {
+        type: Number,
+        min: 1000,
+        max: 9999,
     },
-    city : {
-        type : String,
+    city: {
+        type: String,
         required: true
     },
-    dateBirth : {
-        type : Date,
+    dateBirth: {
+        type: Date,
         required: true
     },
-    description : {
-        type : String,
+    description: {
+        type: String,
         required: true
     },
-    tag : {
-        type : Array
+    tag: {
+        type: Array
     },
-    deleted : {
-        select:false
+    deleted: {
+        select: false
     }
 });
+
+
 userSchema.plugin(softDelete);
-userSchema.plugin(softDelete, { overrideMethods: 'all' });
-
-/**
- * Give all pictures
- */
-function myPictures()
-{
-
-}
-/**
- * Give all Rdvs
- */
-function myRdvs()
-{
-
-}
-// Create the model from the schema and export it
+userSchema.plugin(softDelete, {overrideMethods: 'all'});
 module.exports = mongoose.model('User', userSchema);
