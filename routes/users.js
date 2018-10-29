@@ -61,8 +61,7 @@ router.get('/', function (req, res, next) {
     User.find().count(function (err, total) {
         if (err) {
             return next(err);
-        }
-        ;
+        };
         let query = User.find();
         //Filters
         if (typeof req.query.gender !== 'undefined') {
@@ -73,14 +72,15 @@ router.get('/', function (req, res, next) {
             query = query.where('npa', req.query.npa);
         }
 
-        //TODO : How to manipulate ISOdate with mongoose(Seems that he transform automaticaly ISO date to other format)? How to optimize that ?
+        //TODO : How to manipulate ISOdate with mongoose(Seems that he transform automaticaly ISO date to other format)? How to optimize that ?INSERT FROM API !!!!!!
         if (typeof req.query.ageMin !== 'undefined' && typeof req.query.ageMax !== 'undefined') {
             let today = new Date();
             let dateMin = new Date();
             let dateMax = new Date();
             dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
             dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
-            query = User.find({dateBirth: {"$gte": new Date(dateMin.toISOString())}});
+            //query = User.find({dateBirth: {"$gte":dateMin,"$lte":dateMax}});
+            query = query.where('dateBirth').gte(dateMin).where('dateBirth').lte(dateMax);
             console.log(dateMin.toISOString());
             console.log(dateMax.toISOString());
         }
@@ -166,8 +166,10 @@ router.get('/', function (req, res, next) {
  *   }
  */
 router.get('/:id', loadUserById, function (req, res, next) {
-    getMyPictures(req.params.id);
     res.status(200).send(req.user);
+});
+router.get('/:id/picture', loadUserById, getMyPictures, function (req, res, next) {
+    res.status(200).send(req.picture);
 });
 /**
  * Modify an user
@@ -249,8 +251,8 @@ router.patch('/:id', login.authenticate, loadUserById, function (req, res, next)
  * @apiParam {String} description description of the user
  * @apiParam {Array} tag table of centers of interests
  *
- *@apiExample 200 OK
- *     HTTP/1.1 200 OK
+ *@apiExample
+ *     POST /users HTTP/1.1
  *     Content-Type: application/json
  *   {
  *       "tag": ["Patinage","pole dance"],
@@ -301,12 +303,11 @@ router.post('', function (req, res, next) {
  *     HTTP/1.1 204 No Content
  *
  */
-router.delete('/:id',login.authenticate, loadUserById, function (req, res, next) {
-    let currentUser = User.find({"id" : req.currentUserId});
-    if (currentUser.username !== "admin")
-    {
+router.delete('/:id', login.authenticate, loadUserById, function (req, res, next) {
+    let currentUser = User.find({"id": req.currentUserId});
+    if (currentUser.username !== "admin") {
         res.status(403).send("Contact an admin");
-    }else{
+    } else {
         req.user.delete(function (err) {
             if (err) {
                 return next(err);
@@ -350,32 +351,22 @@ function userNotFound(res, userId) {
     return res.status(404).type('text').send(`No user found with ID ${userId}`);
 }
 
-function getMyPictures(userId)
-{
-    let picture = Picture.find();
-    picture.exec(function (err, pictures) {
+/**
+ *
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+function getMyPictures(req, res, next) {
+    let query = Picture.find({"user" : req.params.id});
+    query.exec(function (err, pictures) {
         if (err) {
-            next(err);
+            next (err);
         }
-        let userIds = pictures.map(pictureDocs => pictureDocs.user);
-        console.log(userIds);
-        Picture.aggregate([
-            {
-                $match: { // Select movies directed by the people we are interested in
-                    user: { $in: userIds }
-                }
-            },
-            {
-                $group: { // Group the documents by director ID
-                    _id: '$userId',
-                    pictureCount: { // Count the number of movies for that ID
-                        $sum: 1
-                    }
-                }
-            }
-        ], function(err, results) {
-            console.log("FINISH");
-        });
+        console.log(pictures);
+        req.picture = pictures;
+        next();
     });
 }
 module.exports = router;
