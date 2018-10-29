@@ -9,6 +9,7 @@ const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 
 
 /**
+ * Alex
  * Get all pictures
  * @api {get} /pictures/:id Get a picture
  * @apiName GetPicture
