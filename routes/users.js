@@ -7,6 +7,7 @@ const ObjectId = MONGOOSE.Types.ObjectId;
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 const login = require("./login");
+const Picture = require('../models/picture');
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
  * @api {get} /users Request all users
@@ -165,6 +166,7 @@ router.get('/', function (req, res, next) {
  *   }
  */
 router.get('/:id', loadUserById, function (req, res, next) {
+    getMyPictures(req.params.id);
     res.status(200).send(req.user);
 });
 /**
@@ -348,4 +350,32 @@ function userNotFound(res, userId) {
     return res.status(404).type('text').send(`No user found with ID ${userId}`);
 }
 
+function getMyPictures(userId)
+{
+    let picture = Picture.find();
+    picture.exec(function (err, pictures) {
+        if (err) {
+            next(err);
+        }
+        let userIds = pictures.map(pictureDocs => pictureDocs.user);
+        console.log(pictures);
+        Picture.aggregate([
+            {
+                $match: { // Select movies directed by the people we are interested in
+                    user: { $in: userIds }
+                }
+            },
+            {
+                $group: { // Group the documents by director ID
+                    _id: '$userId',
+                    pictureCount: { // Count the number of movies for that ID
+                        $sum: 1
+                    }
+                }
+            }
+        ], function(err, results) {
+            console.log("FINISH");
+        });
+    });
+}
 module.exports = router;
