@@ -9,20 +9,75 @@ const ObjectId = MONGOOSE.Types.ObjectId;
 
 
 /* GET all rdvs listing. */
-router.get('/', function(req, res, next) {
-    let query = Rdv.find({});
-    console.log(Rdv);
-    query.exec(function (err,docs)
-    {
-        if (err)
-        {
-            console.warn("Could not get all rdvs");
-            next(err); //Fait suivre le message d'erreur
-        }else{
 
-            res.send(docs); //Renvoi des data
+/**
+ * @api {get} /api/movies List rdvs
+ * @apiName RetrieveMovies
+ * @apiGroup Rdv
+ * @apiVersion 1.0.0
+ * @apiDescription Retrieves a paginated list of rdvs
+ *
+ * @apiUse RdvInResponseBody
+ * @apiUse MovieIncludes
+ * @apiUse Pagination
+ *
+ * @apiParam (URL query parameters) {String} [director] Select only movies directed by the person with the specified ID (this parameter can be given multiple times)
+ * @apiParam (URL query parameters) {Number} [rating] Select only movies with the specified rating (exact match)
+ * @apiParam (URL query parameters) {Number} [ratedAtLeast] Select only movies with a rating greater than or equal to the specified rating
+ * @apiParam (URL query parameters) {Number} [ratedAtMost] Select only movies with a rating lesser than or equal to the specified rating
+ *
+ * @apiExample Example
+ *     GET /api/movies?director=58b2926f5e1def0123e97bc0&page=2&pageSize=50 HTTP/1.1
+ *
+ * @apiSuccessExample 200 OK
+ *     HTTP/1.1 200 OK
+ *     Content-Type: application/json
+ *     Link: &lt;https://evening-meadow-25867.herokuapp.com/api/movies?page=1&pageSize=50&gt;; rel="first prev"
+ *
+ *     [
+ *       {
+ *         "id": "58b2926f5e1def0123e97281",
+ *         "title": "Die Hard",
+ *         "rating": 7.4,
+ *         "directorHref": "/api/people/58b2926f5e1def0123e97bc0",
+ *         "createdAt": "1988-07-12T00:00:00.000Z"
+ *       },
+ *       {
+ *         "id": "58b2926f5e1def0123e97282",
+ *         "title": "Die Hard With a Vengance",
+ *         "rating": 8.3,
+ *         "directorHref": "/api/people/58b2926f5e1def0123e97bc0",
+ *         "createdAt": "1995-05-19T00:00:00.000Z"
+ *       }
+ *     ]
+ */
+
+router.get('/', function(req, res, next) {
+        let query = Rdv.find();
+        // Filter rdv by ctiy
+        if (ObjectId.isValid(req.query.city)) {
+          query = query.where('city').equals(req.query.city);
         }
-    })
+        // Filter rdv by category
+        if (ObjectId.isValid(req.query.category)) {
+          query = query.where('category').equals(req.query.category);
+        }
+
+        query.exec(function (err,docs)
+        {
+            if (err)
+            {
+                console.warn("Could not get all rdvs");
+                next(err); //Fait suivre le message d'erreur
+            }
+            else
+            {
+                res.send(docs);
+            }
+        });
+
+
+
 });
 
 
@@ -73,7 +128,7 @@ router.patch('/:id',loadRdvById,function(req, res, next) {
         req.rdv.description = req.body.category;
     }
 
-    req.save(function(err, savedRdv) {
+    req.rdv.save(function(err, savedRdv) {
         if (err) {
             return next(err);
         }
@@ -84,7 +139,7 @@ router.patch('/:id',loadRdvById,function(req, res, next) {
 
 
 
-//Faire attention à remodifier la partie example correctement
+//Faire attention à remodifier la partie exemple correctement
 
 /**
  * @api {post} /api/rdvs Create a rdv
@@ -132,6 +187,9 @@ router.patch('/:id',loadRdvById,function(req, res, next) {
  *       "createdAt": "1988-07-12T00:00:00.000Z"
  *     }
  */
+
+
+ //tests OK
 router.post('', function(req, res, next) {
     new Rdv(req.body).save(function(err, savedrdv) {
         if (err) {
@@ -146,8 +204,10 @@ router.post('', function(req, res, next) {
 /**
  * Delete a rdv
  */
-router.delete('/:id', function(req, res, next) {
-    req.rdv.remove(function(err) {
+
+ //Test OK
+router.delete('/:id', loadRdvById, function(req, res, next) {
+    req.rdv.delete(function(err) {
         if (err) {
             return next(err);
         }

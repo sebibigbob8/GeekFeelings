@@ -357,7 +357,7 @@ function getMyPictures(userId)
         if (err) {
             next(err);
         }
-        let userIds = pictures.map(pictureDocs => pictureDocs.src);
+        let userIds = pictures.map(pictureDocs => pictureDocs.user);
         console.log(userIds);
         Picture.aggregate([
             {
