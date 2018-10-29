@@ -11,7 +11,7 @@ const rdvSchema = new Schema({
     },
     street: {
         type: String,
-        unique: true,
+        unique: false,
         min: 6,
         required: true
     },

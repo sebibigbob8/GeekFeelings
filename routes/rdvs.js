@@ -52,10 +52,7 @@ const ObjectId = MONGOOSE.Types.ObjectId;
  *     ]
  */
 
-
 router.get('/', function(req, res, next) {
-    Rdv.find().count(function(err, total) {
-      if (err) { return next(err); };
         let query = Rdv.find();
         // Filter rdv by ctiy
         if (ObjectId.isValid(req.query.city)) {
@@ -65,14 +62,6 @@ router.get('/', function(req, res, next) {
         if (ObjectId.isValid(req.query.category)) {
           query = query.where('category').equals(req.query.category);
         }
-        //Pagination
-        let page = parseInt(req.query.page, 10);
-        if (isNaN(page) || page < 1) { page=1; }
-        // Parse the "pageSize" param (default to 100 if invalid)
-        let pageSize = parseInt(req.query.pageSize, 10);
-        if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) { pageSize=30; }
-        // Apply skip and limit to select the correct page of elements
-        query = query.skip((page - 1) * pageSize).limit(pageSize);
 
         query.exec(function (err,docs)
         {
@@ -80,17 +69,14 @@ router.get('/', function(req, res, next) {
             {
                 console.warn("Could not get all rdvs");
                 next(err); //Fait suivre le message d'erreur
-            }else{
-
-                res.send(
-                  page: page,
-                  pageSize: pageSize,
-                  total: total,
-                  data: docs); 
+            }
+            else
+            {
+                res.send(docs);
             }
         });
 
-    });
+
 
 });
 
@@ -142,7 +128,7 @@ router.patch('/:id',loadRdvById,function(req, res, next) {
         req.rdv.description = req.body.category;
     }
 
-    req.save(function(err, savedRdv) {
+    req.rdv.save(function(err, savedRdv) {
         if (err) {
             return next(err);
         }
@@ -201,6 +187,9 @@ router.patch('/:id',loadRdvById,function(req, res, next) {
  *       "createdAt": "1988-07-12T00:00:00.000Z"
  *     }
  */
+
+
+ //tests OK
 router.post('', function(req, res, next) {
     new Rdv(req.body).save(function(err, savedrdv) {
         if (err) {
@@ -215,8 +204,10 @@ router.post('', function(req, res, next) {
 /**
  * Delete a rdv
  */
-router.delete('/:id', function(req, res, next) {
-    req.rdv.remove(function(err) {
+
+ //Test OK
+router.delete('/:id', loadRdvById, function(req, res, next) {
+    req.rdv.delete(function(err) {
         if (err) {
             return next(err);
         }
