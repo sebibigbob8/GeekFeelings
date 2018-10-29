@@ -18,8 +18,15 @@ const pictureSchema = new Schema({
         type: String,
         minlength: 0,
         maxlength: 200,
+    },
+    user: {
+        type: String,
+        default: null,
+        required: true,
     }
     
+    
 });
+
 
 module.exports = mongoose.model('Picture', pictureSchema);

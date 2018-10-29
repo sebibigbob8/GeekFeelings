@@ -6,10 +6,11 @@ const ObjectId = mongoose.Types.ObjectId;
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
+const user = [];
+const userIds = user.map(user => user._id);
 
 
 /**
- * Alex
  * Get all pictures
  * @api {get} /pictures/:id Get a picture
  * @apiName GetPicture
@@ -35,7 +36,9 @@ router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
 router.get('/', function(req, res, next) {
     //Count total pictures matching the URL query parameters
     const countQuery = queryPictures(req);
+    
     countQuery.count(function(err, total) {
+        
         if(err) {
             console.warn("Could not get all pictures");
             return next(err);
@@ -43,6 +46,10 @@ router.get('/', function(req, res, next) {
     
         //Prepare the initial database query from the URL query parameters
         let query = queryPictures(req);
+        
+        if (ObjectId.isValid(req.query.user)) {
+            query = query.where('user').equals(req.query.user);
+        }
         
         //Execute the query
         query.sort({ title: 1 }).exec(function(err, pictures) {
@@ -146,6 +153,16 @@ function queryPictures(req) {
 
     return query;
 }
+
+Picture.aggregate([
+    {
+        $match: {
+            _id: '$user',
+        }
+    }
+], function(err, results) {
+    return(results);
+})
 
 
 /**
