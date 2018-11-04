@@ -37,7 +37,7 @@ router.post('',function(req, res, next) {
         } else if (!user) {
             return res.sendStatus(401);
         }
-        console.log(user);
+        console.log('{$user} attempt login');
         bcrypt.compare(req.body.password, user.password, function(err, valid) {
             if (err) {
                 return next(err);
