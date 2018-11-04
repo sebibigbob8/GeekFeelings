@@ -7,11 +7,11 @@ const pictureSchema = new Schema({
         type: String,
         required: true,
         unique: true,
-        validate: {
+        /**validate: {
             validator: validatePictureSrcUniqueness,
             message: 'Picture {value} already exists',
             isAsync: true,
-        }
+        }*/
     },
     description: {
         type: String,
@@ -27,14 +27,14 @@ const pictureSchema = new Schema({
     
 });
 
-
+/**
 function validatePictureSrcUniqueness(value, callback) {
     const picture = this;
     this.constructor.findOne().where('src').equals(value).exec(function(err, existingPicture) {
         callback(!err && (!existingPicture || existingPicture._id.equals(picture._id)));
     });
 }
-
+*/
 
 
 

@@ -30,11 +30,6 @@ const userIds = user.map(user => user._id);
  *          "description": "phot prise en pleine journée",
  *          "__v": 0
  *      },
- *
- *
- *
- *
- *
  */
 router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
     res.send(req.picture);
@@ -121,20 +116,22 @@ router.get('/', function(req, res, next) {
  * @apiExample Example
  *      PATCH /api/pictures/5bd709cd2832dd1b5c723b46 HTTP/1.1
  *      Content-Type: application/json
+ *      
+ *      {    
+ *          "description": "Vacations in Thailand, was awesome !"
+ *      }
  *
+ * @apiSuccessExample 200 OK
+ *      HTTP/1.1 200 OK
+ *      Content-Type: application/json
  *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
+ *      {
+ *          "user": "5bd6dab42db32a3e8c4e1124",
+ *          "id": "5bd709cd2832dd1b5c723b46",
+ *          "src": "https://www.google.ch/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwjUtM7HsqveAhUQC-wKHbscDwkQjRx6BAgBEAU&url=https%3A%2F%2Fpixabay.com%2Ffr%2Fimage-statue-laiton-enfant-art-1465348%2F&psig=AOvVaw0ErNhIADV0kxp3uT7cAIFb&ust=1540893717663906",
+ *       "description": "Vacations in Thailand, was awesome !",
+ *       "__v": 0
+ *      }
  */
 router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
     
@@ -211,6 +208,13 @@ router.post('', function(req, res, next) {
  * @apiName DeletePicture
  * @apiGroup Picture
  * @apiDescription Permanently deletes a picture.
+ *
+ * @apiExample Example
+ *      DELETE /api/pictures/58b2926f5e1def0123e97281 HTTP/1.1
+ *
+ * @apiSuccessExample 204 No Content
+ *      HTTP/1.1 204 No Content
+ *
  */
 router.delete('/:id', loadPictureFromParamsMiddleware, function(req, res, next) {
      
