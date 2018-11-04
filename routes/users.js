@@ -78,7 +78,6 @@ router.get('/', function (req, res, next) {
             let dateMax = new Date();
             dateMin.setFullYear(today.getFullYear() - req.query.ageMax);
             dateMax.setFullYear(today.getFullYear() - req.query.ageMin);
-            //query = User.find({dateBirth: {"$gte":dateMin,"$lte":dateMax}});
             query = query.where('dateBirth').gte(dateMin).where('dateBirth').lte(dateMax);
             console.log(dateMin.toISOString());
             console.log(dateMax.toISOString());
@@ -280,6 +279,7 @@ router.patch('/:id', login.authenticate, loadUserById, function (req, res, next)
  *       "tag": ["Patinage","pole dance"],
  *       "name": "Niska",
  *       "username": "grigny91",
+ *       "password":"password",
  *       "gender": "other",
  *       "street": "eqwer",
  *       "streetNumber": "4",
