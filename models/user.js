@@ -55,6 +55,6 @@ const userSchema = new Schema({
 });
 
 
-userSchema.plugin(softDelete);
+//userSchema.plugin(softDelete);
 userSchema.plugin(softDelete, {overrideMethods: 'all'});
 module.exports = mongoose.model('User', userSchema);
