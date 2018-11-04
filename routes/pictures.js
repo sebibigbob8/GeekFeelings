@@ -172,7 +172,7 @@ router.patch('/:id',login.authenticate, loadPictureFromParamsMiddleware, functio
  *
  *      {
  *          "src": "https://www.google.ch/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiX7Zyc5KveAhUM-qQKHcgVAfEQjRx6BAgBEAU&url=https%3A%2F%2Fwww.w3schools.com%2Fw3css%2Fw3css_images.asp&psig=AOvVaw06wIo8LrfUiMl1FRy0nCbt&ust=1540907048523156",
- *          "description": "Magnifique ciel !",
+ *          "description": "Magnifique ciel !"
  *      }
  *
  * @apiSuccessExample 201 Created

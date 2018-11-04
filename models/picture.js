@@ -21,7 +21,6 @@ const pictureSchema = new Schema({
     user: {
         type: Schema.Types.ObjectId,
         REF: "User",
-        default: null,
         required: true,
     }
     
@@ -36,6 +35,11 @@ pictureSchema.virtual('userHref').get(getUserHref).set(setUserHref);
 function getUserHref() {
   return `/api/user/${this.user._id || this.user}`;
 }
+
+pictureSchema.set('toJSON', {
+  transform: transformJsonPicture, // Modify the serialized JSON with a custom function
+  virtuals: true // Include virtual properties when serializing documents to JSON
+});
 
 
 function setUserHref(value) {
@@ -54,8 +58,7 @@ function setUserHref(value) {
     this.user = null;
   }
 }
-
-
+ 
 function validateUser(value, callback) {
   if (!value && !this._userHref) {
     this.invalidate('userHref', 'Path `userHref` is required', value, 'required');
@@ -81,6 +84,23 @@ function validatePictureSrcUniqueness(value, callback) {
     });
 }
 */
+
+function transformJsonPicture(doc, json, options) {
+
+  // Remove MongoDB _id & __v (there's a default virtual "id" property)
+  delete json._id;
+  delete json.__v;
+
+  if (json.user instanceof ObjectId) {
+    // Remove the director property by default (there's a "directorHref" virtual property)
+    delete json.user;
+  } else {
+    // If the director was populated, include it in the serialization
+    json.user = doc.user.toJSON();
+  }
+
+  return json;
+}
 
 
 
