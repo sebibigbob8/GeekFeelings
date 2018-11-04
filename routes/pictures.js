@@ -134,7 +134,7 @@ router.get('/', function(req, res, next) {
  *       "__v": 0
  *      }
  */
-router.patch('/:id',login.authenticate, loadPictureFromParamsMiddleware, function(req, res, next) {
+router.patch('/:id', login.authenticate, loadPictureFromParamsMiddleware, function(req, res, next) {
     if (req.currentUserId !== req.params.id) {
         return res.status(403).send('Not your picture.')
     }
