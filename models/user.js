@@ -16,7 +16,7 @@ const userSchema = new Schema({
         type: String,
         min: 6,
         select: false,
-        required : true,
+        required : true
     },
     gender: {
         type: String,
