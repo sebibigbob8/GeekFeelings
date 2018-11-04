@@ -8,18 +8,19 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 const user = [];
 const userIds = user.map(user => user._id);
-
+const login = require("./login");
+const User = require('../models/user');
 
 /**
  * @api {get} /pictures/:id Get a picture
  * @apiName GetPicture
  * @apiGroup Picture
- * @apiDescription Get one movie.
+ * @apiDescription Get one picture.
  *
  * @apiExample
  *      GET /api/pictures/5bd709792832dd1b5c723b43 HTTP/1.1
  *
- * @apiSuccessExample 200 OK
+ * @apiSuccessExample 200   OK
  *      HTTP/1.1 200 OK
  *      Content-Type: application/json
  *
@@ -133,8 +134,10 @@ router.get('/', function(req, res, next) {
  *       "__v": 0
  *      }
  */
-router.patch('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
-    
+router.patch('/:id',login.authenticate, loadPictureFromParamsMiddleware, function(req, res, next) {
+    if (req.currentUserId !== req.params.id) {
+        return res.status(403).send('Not your picture.')
+    }
     //Verify if the description is undefined
     //if not modify the description
     if(req.body.description !== undefined) {
@@ -216,8 +219,11 @@ router.post('', function(req, res, next) {
  *      HTTP/1.1 204 No Content
  *
  */
-router.delete('/:id', loadPictureFromParamsMiddleware, function(req, res, next) {
-     
+router.delete('/:id', login.authenticate, loadPictureFromParamsMiddleware, function(req, res, next) {
+    
+    if (req.currentUserId !== req.params.id) {
+        return res.status(403).send('Not your picture.')
+    }
     req.picture.delete(function(err) {
         if (err) {
             return next(err);
@@ -246,16 +252,6 @@ function queryPictures(req) {
 
     return query;
 }
-
-Picture.aggregate([
-    {
-        $match: {
-            _id: '$user',
-        }
-    }
-], function(err, results) {
-    return(results);
-})
 
 
 /**
