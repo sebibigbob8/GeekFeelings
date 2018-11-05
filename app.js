@@ -14,7 +14,7 @@ var app = express();
 
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-mongoose.connect('ds125423.mlab.com:25423/heroku_lx8z1r2n'||'mongodb://localhost/geekFeelings');
+mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost/geekFeelings');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
