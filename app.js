@@ -14,7 +14,10 @@ var app = express();
 
 const mongoose = require('mongoose');
 mongoose.Promise = Promise;
-mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost/geekFeelings');
+mongoose.connect(process.env.MONGODB_URI||'mongodb://localhost/geekFeelings', function(err){
+      if(mongoose.connection.readyState === 0)
+        -    createError(500,err);
+    });
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
