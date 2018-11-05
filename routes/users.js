@@ -326,18 +326,22 @@ router.post('', function (req, res, next) {
  *
  */
 router.delete('/:id', login.authenticate, loadUserById, function (req, res, next) {
-    let currentUser = User.find({"id": req.currentUserId});
-    if (currentUser.username !== "admin") {
-        res.status(403).send("Contact an admin");
-    } else {
-        req.user.delete(function (err) {
-            if (err) {
-                return next(err);
-            }
-            console.log(`Deleted user "${req.user.name}"`);
-            res.sendStatus(204);
-        });
-    }
+    let currentUser = User.findOne({username : req.body.username}).select("+password").exec(function(err, user) {
+        if(err)
+            next(err);
+        if (currentUser.username !== "admin") {
+            res.status(403).send("Contact an admin");
+        } else {
+            req.user.delete(function (err) {
+                if (err) {
+                    return next(err);
+                }
+                console.log(`Deleted user "${req.user.name}"`);
+                res.sendStatus(204);
+            });
+        }
+    });
+
 
 });
 
