@@ -193,6 +193,9 @@ router.post('', function(req, res, next) {
     /**
      * Create a picture
      */
+    if (req.currentUserId !== req.params.id) {
+        return res.status(403).send("You cant post on an account that's not yours")
+    }
     new Picture(req.body).save(function(err, savedPicture){
     if (err) {
         return next(err);
