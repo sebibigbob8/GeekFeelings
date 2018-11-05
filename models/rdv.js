@@ -25,14 +25,14 @@ const rdvSchema = new Schema({
         type : String,
         required: true
     },
+    npa :  {
+        type: Number,
+        min: 6,
+        select: true
+    },
     street: {
         type: String,
         required: true
-    },
-    npa :  {
-        type: String,
-        min: 6,
-        select: true
     },
     streetNumber : {
         type : Number,
@@ -45,6 +45,7 @@ const rdvSchema = new Schema({
     description : {
         type : String,
         max : 9999,
+        required: false
     },
     category : {
         type : String,

@@ -7,10 +7,28 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 
 /**
- * Sign in to the API
+ * Sign in the API
  * @api {post} /login Try to connect with username and password
  * @apiName PostLogin
  * @apiGroup Login
+ *
+ * @apiParam {String} username Username of the user
+ * @apiParam {String} password Password of the user
+ *
+ *@apiExample
+ *     POST /users HTTP/1.1
+ *     Content-Type: application/json
+ *   {
+ *       "username": "grigny91",
+ *       "password":"password",
+ *   }
+ *
+ *  @apiSuccessExample 201 OK
+ *     HTTP/1.1 20 OK
+ *     Content-Type: application/json
+ *  {
+ *      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YmRmNjQwZTYxOTU0MzNhNDQwYjRhMWMiLCJleHAiOjE1NDE5NzE2MzYuNjg4LCJpYXQiOjE1NDEzNjY4MzZ9.-lomIo1zUb96JEa9I1NX8vVM0qLdpn3Xp2d_KDHnk_Q"
+ *  }
  */
 router.post('',function(req, res, next) {
     User.findOne({username : req.body.username}).select("+password").exec(function(err, user) {
@@ -19,7 +37,7 @@ router.post('',function(req, res, next) {
         } else if (!user) {
             return res.sendStatus(401);
         }
-        console.log(user);
+        console.log('{$user} attempt login');
         bcrypt.compare(req.body.password, user.password, function(err, valid) {
             if (err) {
                 return next(err);
