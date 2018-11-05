@@ -189,10 +189,11 @@ router.patch('/:id', login.authenticate, loadPictureFromParamsMiddleware, functi
  *
  */
 
-router.post('', function(req, res, next) {
+router.post('',login.authenticate, function(req, res, next) {
     /**
      * Create a picture
      */
+    req.body.user=req.currentUserId;
     new Picture(req.body).save(function(err, savedPicture){
     if (err) {
         return next(err);
