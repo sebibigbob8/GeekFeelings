@@ -347,9 +347,9 @@ router.delete('/:id', login.authenticate, loadUserById, function (req, res, next
 
 /**
  * Load a user in the Request object depending of params given
- * @param req
- * @param res
- * @param next
+ * param req
+ * param res
+ * param next
  */
 function loadUserById(req, res, next) {
     let userId = req.params.id;
@@ -370,8 +370,8 @@ function loadUserById(req, res, next) {
 
 /**
  * Message in case of an "not found"
- * @param res
- * @param userId
+ * param res
+ * param userId
  */
 function userNotFound(res, userId) {
     return res.status(404).type('text').send(`No user found with ID ${userId}`);
@@ -380,9 +380,9 @@ function userNotFound(res, userId) {
 /**
  *Get all pictures of the user
  *
- * @param req
- * @param res
- * @param next
+ * param req
+ * param res
+ * param next
  */
 function getMyPictures(req, res, next) {
     let query = Picture.find({"user" : req.params.id});

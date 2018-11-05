@@ -307,8 +307,8 @@ function loadRdvById(req, res, next){
 }
 /**
  * Message in case of a "not found"
- * @param res
- * @param rdvId
+ * param res
+ * param rdvId
  * @returns {*}
  */
 function rdvNotFound(res, rdvId) {

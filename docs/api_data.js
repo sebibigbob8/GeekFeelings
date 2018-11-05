@@ -5,8 +5,44 @@ define({ "api": [
     "title": "Try to connect with username and password",
     "name": "PostLogin",
     "group": "Login",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "username",
+            "description": "<p>Username of the user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "password",
+            "description": "<p>Password of the user</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "POST /users HTTP/1.1",
+        "content": "  POST /users HTTP/1.1\n  Content-Type: application/json\n{\n    \"username\": \"grigny91\",\n    \"password\":\"password\",\n}",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "201 OK",
+          "content": "   HTTP/1.1 20 OK\n   Content-Type: application/json\n{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1YmRmNjQwZTYxOTU0MzNhNDQwYjRhMWMiLCJleHAiOjE1NDE5NzE2MzYuNjg4LCJpYXQiOjE1NDEzNjY4MzZ9.-lomIo1zUb96JEa9I1NX8vVM0qLdpn3Xp2d_KDHnk_Q\"\n}",
+          "type": "json"
+        }
+      ]
+    },
     "version": "0.0.0",
-    "filename": "routes/login.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/login.js",
     "groupTitle": "Login"
   },
   {
@@ -39,12 +75,12 @@ define({ "api": [
     "examples": [
       {
         "title": "Example",
-        "content": "POST /api/pictures HTTP/1.1\nContent-Type: application/json\n\n{\n    \"src\": \"https://www.google.ch/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiX7Zyc5KveAhUM-qQKHcgVAfEQjRx6BAgBEAU&url=https%3A%2F%2Fwww.w3schools.com%2Fw3css%2Fw3css_images.asp&psig=AOvVaw06wIo8LrfUiMl1FRy0nCbt&ust=1540907048523156\",\n    \"description\": \"Magnifique ciel !\",\n}",
+        "content": "POST /api/pictures HTTP/1.1\nContent-Type: application/json\n\n{\n    \"src\": \"https://www.google.ch/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEwiX7Zyc5KveAhUM-qQKHcgVAfEQjRx6BAgBEAU&url=https%3A%2F%2Fwww.w3schools.com%2Fw3css%2Fw3css_images.asp&psig=AOvVaw06wIo8LrfUiMl1FRy0nCbt&ust=1540907048523156\",\n    \"description\": \"Magnifique ciel !\"\n}",
         "type": "json"
       }
     ],
     "version": "0.0.0",
-    "filename": "routes/pictures.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/pictures.js",
     "groupTitle": "Picture"
   },
   {
@@ -71,7 +107,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "routes/pictures.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/pictures.js",
     "groupTitle": "Picture"
   },
   {
@@ -80,7 +116,7 @@ define({ "api": [
     "title": "Get a picture",
     "name": "GetPicture",
     "group": "Picture",
-    "description": "<p>Get one movie.</p>",
+    "description": "<p>Get one picture.</p>",
     "examples": [
       {
         "title": "GET /api/pictures/5bd709792832dd1b5c723b43 HTTP/1.1",
@@ -91,14 +127,14 @@ define({ "api": [
     "success": {
       "examples": [
         {
-          "title": "200 OK",
+          "title": "200   OK",
           "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\n    \"user\": \"5bd6drb42db32a3e8c4e1124\",\n    \"_id\": \"5bd709792832dd1b5c723b43\",\n    \"src\": \"https://www.google.ch/url?sa=i&source=images&cd=&cad=rja&uact=8&ved=2ahUKEw\",\n    \"description\": \"phot prise en pleine journée\",\n    \"__v\": 0\n},",
           "type": "json"
         }
       ]
     },
     "version": "0.0.0",
-    "filename": "routes/pictures.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/pictures.js",
     "groupTitle": "Picture"
   },
   {
@@ -160,7 +196,7 @@ define({ "api": [
         "type": "json"
       }
     ],
-    "filename": "routes/pictures.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/pictures.js",
     "groupTitle": "Picture"
   },
   {
@@ -187,7 +223,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "routes/pictures.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/pictures.js",
     "groupTitle": "Picture"
   },
   {
@@ -197,7 +233,69 @@ define({ "api": [
     "name": "CreateRdv",
     "group": "Rdv",
     "version": "1.0.0",
-    "description": "<p>Registers a new rdv.</p>",
+    "description": "<p>Registers a new rdv</p>",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "creator",
+            "description": "<p>Name of the rdv's creator</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "date",
+            "optional": false,
+            "field": "date",
+            "description": "<p>date at witch occurs the rdv</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "city",
+            "description": "<p>city where the rdv occurs</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "npa",
+            "description": "<p>npa in which the rdv occurs</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "street",
+            "description": "<p>street in witch the rdv occurs</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "streetNumber",
+            "description": "<p>at which the rdv occurs</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "purposeTitle",
+            "description": "<p>Title of the rdv</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "category",
+            "description": "<p>categoryof the rdv</p> <h1>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</h1>"
+          }
+        ]
+      }
+    },
     "success": {
       "fields": {
         "Response body": [
@@ -206,14 +304,14 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "id",
-            "description": "<p>A unique identifier for the movie generated by the server</p>"
+            "description": "<p>A unique identifier for the movie generated by the server</p> <blockquote> <blockquote> <blockquote> <blockquote> <blockquote> <blockquote> <blockquote> <p>df338f7fedd2abb6394cd5889a937b336c27d261</p> </blockquote> </blockquote> </blockquote> </blockquote> </blockquote> </blockquote> </blockquote>"
           }
         ]
       },
       "examples": [
         {
           "title": "201 Created",
-          "content": "HTTP/1.1 201 Created\nContent-Type: application/json\nLocation: https://evening-meadow-25867.herokuapp.com/api/rdv/58b2926f5e1def0123e97281\n\n{\n  \"city\": \"Yverdon-les-Bains\",\n  \"street\": Avenue des Sports,\n  \"npa\": \"1280\"\n  \"streetNumber\": \"12\"\n  \"purposeTitle\": \"Partie de Magic\"\n  \"description\": \"Cherche un geek chaud à se faire une partie au calme\"\n  \"category\": \"Magic\"\n  \"directorHref\": \"/api/people/58b2926f5e1def0123e97bc0\",\n  \"createdAt\": \"1988-07-12T00:00:00.000Z\"\n}",
+          "content": "HTTP/1.1 201 Created\nContent-Type: application/json\n\n{\n\"_id\": \"5bd71eb9cbc8c382a7b07ee4\",\n\"deleted\": false,\n\"creator\": \"Guy\",\n\"date\": \"1983-01-01T00:00:00.000Z\",\n\"city\": \"Lausanne\",\n\"street\": \"chemin du Levant\",\n\"npa\": \"1280\",\n\"streetNumber\": 12,\n\"purposeTitle\": \"Partie de Magic\",\n\"description\": \"Cherche un geek chaud à se faire une partie au calme\",\n\"category\": \"Magic\",\n\"__v\": 0\n}",
           "type": "json"
         }
       ]
@@ -221,59 +319,52 @@ define({ "api": [
     "examples": [
       {
         "title": "Example",
-        "content": "POST /api/rdvs HTTP/1.1\nContent-Type: application/json\n\n{\n  \"city\": \"Yverdon-les-Bains\",\n  \"street\": \"Avenue des Sports\",\n  \"npa\": \"1280\"\n  \"streetNumber\": \"12\"\n  \"purposeTitle\": \"Partie de Magic\"\n  \"description\": \"Cherche un geek chaud à se faire une partie au calme\"\n  \"category\": \"Magic\"\n}",
+        "content": " POST /api/rdvs HTTP/1.1\n Content-Type: application/json\n\n{\n\"creator\": \"Guy\",\n\"date\": \"1983-01-01T00:00:00.000Z\",\n\"city\": \"Lausanne\",\n\"street\": \"chemin du Levant\",\n\"npa\": \"1280\",\n\"streetNumber\": \"12\",\n\"purposeTitle\": \"Partie de Magic\",\n\"description\": \"Cherche un geek chaud à se faire une partie au calme\",\n\"category\": \"Magic\"\n}",
         "type": "json"
       }
     ],
-    "filename": "routes/rdvs.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/rdvs.js",
     "groupTitle": "Rdv"
   },
   {
-    "type": "get",
-    "url": "/api/movies",
-    "title": "List rdvs",
-    "name": "RetrieveMovies",
+    "type": "delete",
+    "url": "/api/rdvs/:id",
+    "title": "Delete a rdv",
+    "name": "DeleteRdv",
     "group": "Rdv",
     "version": "1.0.0",
-    "description": "<p>Retrieves a paginated list of rdvs</p>",
-    "parameter": {
-      "fields": {
-        "URL query parameters": [
-          {
-            "group": "URL query parameters",
-            "type": "String",
-            "optional": true,
-            "field": "director",
-            "description": "<p>Select only movies directed by the person with the specified ID (this parameter can be given multiple times)</p>"
-          },
-          {
-            "group": "URL query parameters",
-            "type": "Number",
-            "optional": true,
-            "field": "rating",
-            "description": "<p>Select only movies with the specified rating (exact match)</p>"
-          },
-          {
-            "group": "URL query parameters",
-            "type": "Number",
-            "optional": true,
-            "field": "ratedAtLeast",
-            "description": "<p>Select only movies with a rating greater than or equal to the specified rating</p>"
-          },
-          {
-            "group": "URL query parameters",
-            "type": "Number",
-            "optional": true,
-            "field": "ratedAtMost",
-            "description": "<p>Select only movies with a rating lesser than or equal to the specified rating</p>"
-          }
-        ]
-      }
-    },
+    "description": "<p>Permanently deletes a rdv.</p>",
     "examples": [
       {
         "title": "Example",
-        "content": "GET /api/movies?director=58b2926f5e1def0123e97bc0&page=2&pageSize=50 HTTP/1.1",
+        "content": "DELETE /api/rdvs/5bd71eb9cbc8c382a7b07ee4 HTTP/1.1\nContent-Type: application/json",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "204 No Content",
+          "content": "HTTP/1.1 204 No Content",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/rdvs.js",
+    "groupTitle": "Rdv"
+  },
+  {
+    "type": "patch",
+    "url": "/api/rdvs/:id",
+    "title": "Partially update a rdv",
+    "name": "PartiallyUpdateRdv",
+    "group": "Rdv",
+    "version": "1.0.0",
+    "description": "<p>Partially updates a rdv's data</p>",
+    "examples": [
+      {
+        "title": "Example",
+        "content": "PATCH /api/rdvs/5bd7169e8b1b7182a0290f37\n\n{\n  \"date\": \"1983-01-01T00:00:00.000Z\"\n}",
         "type": "json"
       }
     ],
@@ -281,12 +372,93 @@ define({ "api": [
       "examples": [
         {
           "title": "200 OK",
-          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\nLink: &lt;https://evening-meadow-25867.herokuapp.com/api/movies?page=1&pageSize=50&gt;; rel=\"first prev\"\n\n[\n  {\n    \"id\": \"58b2926f5e1def0123e97281\",\n    \"title\": \"Die Hard\",\n    \"rating\": 7.4,\n    \"directorHref\": \"/api/people/58b2926f5e1def0123e97bc0\",\n    \"createdAt\": \"1988-07-12T00:00:00.000Z\"\n  },\n  {\n    \"id\": \"58b2926f5e1def0123e97282\",\n    \"title\": \"Die Hard With a Vengance\",\n    \"rating\": 8.3,\n    \"directorHref\": \"/api/people/58b2926f5e1def0123e97bc0\",\n    \"createdAt\": \"1995-05-19T00:00:00.000Z\"\n  }\n]",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n{\n\"deleted\": false,\n\"_id\": \"5bd7169e8b1b7182a0290f37\",\n\"creator\": \"Guy\",\n\"date\": \"1982-01-01T00:00:00.000Z\",\n\"city\": \"Lausanne\",\n\"street\": \"121111\",\n\"npa\": \"1280\",\n\"streetNumber\": 12,\n\"purposeTitle\": \"Partie de Magic\",\n\"description\": \"Cherche un geek chaud à se faire une partie au calme\",\n\"category\": \"Magic\",\n\"__v\": 0\n}",
           "type": "json"
         }
       ]
     },
-    "filename": "routes/rdvs.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/rdvs.js",
+    "groupTitle": "Rdv"
+  },
+  {
+    "type": "get",
+    "url": "/api/rdvs/:id",
+    "title": "Get a rdv by ID",
+    "name": "RetrieveRdv",
+    "group": "Rdv",
+    "version": "1.0.0",
+    "description": "<p>Retrieve one rdv by ID</p>",
+    "examples": [
+      {
+        "title": "Example",
+        "content": "GET /api/rdvs/5bd7004fa2ef18819d44226e HTTP/1.1",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "200 OK",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n  {\n   \"deleted\": false,\n   \"_id\": \"5bd7004fa2ef18819d44226e\",\n   \"creator\": \"Jean\",\n   \"guest\": \"Jeanne\",\n   \"city\": \"Genève\",\n   \"street\": \"Route de Penthalaz\",\n   \"npa\": \"1280\",\n   \"streetNumber\": 12,\n   \"purposeTitle\": \"Repas\",\n   \"description\": \"Un rendez-vous galant\",\n   \"category\": \"Restaurant\",\n   \"__v\": 0\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/rdvs.js",
+    "groupTitle": "Rdv"
+  },
+  {
+    "type": "get",
+    "url": "/api/rdvs",
+    "title": "List rdvs",
+    "name": "RetrieveRdv",
+    "group": "Rdv",
+    "version": "1.0.0",
+    "description": "<p>Retrieves a paginated list of rdvs with specified parameters</p>",
+    "parameter": {
+      "fields": {
+        "URL query parameters": [
+          {
+            "group": "URL query parameters",
+            "type": "String",
+            "optional": true,
+            "field": "creator",
+            "description": "<p>Select only rdvs generated by specified creator</p>"
+          },
+          {
+            "group": "URL query parameters",
+            "type": "String",
+            "optional": true,
+            "field": "city",
+            "description": "<p>Select only rdvs occuring in a specified city</p>"
+          },
+          {
+            "group": "URL query parameters",
+            "type": "String",
+            "optional": true,
+            "field": "category",
+            "description": "<p>Select only rdvs related to a specified category</p>"
+          }
+        ]
+      }
+    },
+    "examples": [
+      {
+        "title": "Example",
+        "content": "GET /api/rdv?city=Genève",
+        "type": "json"
+      }
+    ],
+    "success": {
+      "examples": [
+        {
+          "title": "200 OK",
+          "content": "HTTP/1.1 200 OK\nContent-Type: application/json\n\n  {\n   \"deleted\": false,\n   \"_id\": \"5bd6d72bc4158f805389e41e\",\n   \"city\": \"Genève\",\n   \"street\": \"1111\",\n   \"npa\": \"1280\",\n   \"streetNumber\": 12,\n   \"purposeTitle\": \"Partie de Magic\",\n   \"description\": \"Cherche un geek chaud à se faire une partie au calme\",\n   \"category\": \"Magic\",\n   \"__v\": 0\n\n  },\n   {\n   \"deleted\": false,\n   \"_id\": \"5bd7004fa2ef18819d44226e\",\n   \"creator\": \"Jean\",\n   \"guest\": \"Jeanne\",\n   \"city\": \"Genève\",\n   \"street\": \"Route de Penthalaz\",\n   \"npa\": \"1280\",\n   \"streetNumber\": 12,\n   \"purposeTitle\": \"Repas\",\n   \"description\": \"Un rendez-vous galant\",\n   \"category\": \"Restaurant\",\n   \"__v\": 0\n  }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/rdvs.js",
     "groupTitle": "Rdv"
   },
   {
@@ -320,6 +492,13 @@ define({ "api": [
             "optional": false,
             "field": "id",
             "description": "<p>Unique identifier of the user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "define",
+            "description": "<p>this parameter return the number of pictures of the user</p>"
           }
         ]
       }
@@ -425,7 +604,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/users.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/users.js",
     "groupTitle": "User"
   },
   {
@@ -512,8 +691,8 @@ define({ "api": [
     },
     "examples": [
       {
-        "title": "200 OK",
-        "content": "  HTTP/1.1 200 OK\n  Content-Type: application/json\n{\n    \"tag\": [\"Patinage\",\"pole dance\"],\n    \"name\": \"Niska\",\n    \"username\": \"grigny91\",\n    \"gender\": \"other\",\n    \"street\": \"eqwer\",\n    \"streetNumber\": \"4\",\n    \"npa\": 9855,\n    \"city\": \"Santa monica\",\n    \"dateBirth\": \"1991-04-10T22:57:50.000Z\",\n    \"description\": \"W.L.G\"\n}",
+        "title": "POST /users HTTP/1.1",
+        "content": "  POST /users HTTP/1.1\n  Content-Type: application/json\n{\n    \"tag\": [\"Patinage\",\"pole dance\"],\n    \"name\": \"Niska\",\n    \"username\": \"grigny91\",\n    \"password\":\"password\",\n    \"gender\": \"other\",\n    \"street\": \"eqwer\",\n    \"streetNumber\": \"4\",\n    \"npa\": 9855,\n    \"city\": \"Santa monica\",\n    \"dateBirth\": \"1991-04-10T22:57:50.000Z\",\n    \"description\": \"W.L.G\"\n}",
         "type": "json"
       }
     ],
@@ -527,7 +706,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "routes/users.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/users.js",
     "groupTitle": "User"
   },
   {
@@ -566,7 +745,7 @@ define({ "api": [
       ]
     },
     "version": "0.0.0",
-    "filename": "routes/users.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/users.js",
     "groupTitle": "User"
   },
   {
@@ -584,6 +763,13 @@ define({ "api": [
             "optional": false,
             "field": "id",
             "description": "<p>Unique identifier of the user</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": false,
+            "field": "define",
+            "description": "<p>this parameter return the number of pictures of the user</p>"
           }
         ]
       }
@@ -689,7 +875,7 @@ define({ "api": [
       }
     },
     "version": "0.0.0",
-    "filename": "routes/users.js",
+    "filename": "S:/HEIG3/WEBSERV/GeekFeelings/GeekFeelings/routes/users.js",
     "groupTitle": "User"
   }
 ] });

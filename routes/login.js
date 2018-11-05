@@ -55,9 +55,9 @@ router.post('',function(req, res, next) {
 });
 /**
  * Test the token
- * @param req
- * @param res
- * @param next
+ * param req
+ * param res
+ * param next
  * @returns {*|void}
  */
 function authenticate(req, res, next) {
