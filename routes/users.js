@@ -276,17 +276,17 @@ router.patch('/:id', login.authenticate, loadUserById, function (req, res, next)
  *     POST /users HTTP/1.1
  *     Content-Type: application/json
  *   {
- *       "tag": ["Patinage","pole dance"],
+ *       *"tag": ["Patinage","pole dance"],
  *       "name": "Niska",
  *       "username": "grigny91",
  *       "password":"password",
  *       "gender": "other",
- *       "street": "eqwer",
- *       "streetNumber": "4",
- *       "npa": 9855,
+ *       *"street": "eqwer",
+ *       *"streetNumber": "4",
+ *       *"npa": 9855,
  *       "city": "Santa monica",
  *       "dateBirth": "1991-04-10T22:57:50.000Z",
- *       "description": "W.L.G"
+ *       *"description": "W.L.G"
  *   }
  *
  *  @apiSuccessExample 201 OK

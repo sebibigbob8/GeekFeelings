@@ -16,19 +16,20 @@ const userSchema = new Schema({
         type: String,
         min: 6,
         select: false,
-        required : true
+        required: true
     },
     gender: {
         type: String,
-        enum: ['male', 'female', 'other']
+        enum: ['male', 'female', 'other'],
+        required: true
     },
     street: {
         type: String,
-        required: true
+        required: false
     },
     streetNumber: {
         type: String,
-        required: true
+        required: false
     },
     npa: {
         type: Number,
@@ -45,7 +46,7 @@ const userSchema = new Schema({
     },
     description: {
         type: String,
-        required: true
+        required: false
     },
     tag: {
         type: Array
