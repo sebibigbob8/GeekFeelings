@@ -5,7 +5,6 @@ var path = require('path');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var peopleRouter = require('./routes/peoples');
 var picturesRouter = require('./routes/pictures');
 var loginRouter = require('./routes/login');
 var rdvsRouter = require('./routes/rdvs');
@@ -36,7 +35,6 @@ app.use(function(req, res, next) {
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-app.use('/people', peopleRouter);
 app.use('/pictures', picturesRouter);
 app.use('/login',loginRouter);
 app.use('/rdvs',rdvsRouter);
