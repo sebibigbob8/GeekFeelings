@@ -8,6 +8,7 @@ var usersRouter = require('./routes/users');
 var picturesRouter = require('./routes/pictures');
 var loginRouter = require('./routes/login');
 var rdvsRouter = require('./routes/rdvs');
+var cors = require('cors');
 
 var app = express();
 
@@ -27,11 +28,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(function(req, res, next) {
-    res.header("*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    next();
-});
+//TODO : https://www.npmjs.com/package/cors -> install cross plugin
+app.use(cors());
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
