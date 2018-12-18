@@ -306,7 +306,7 @@ router.post('', function (req, res, next) {
                 return next(err);
             }
             console.log(`Created user "${saveduser}"`);
-            res.status(201).send(saveduser.username + " Successfully created");
+            res.status(201).send(JSON.parse(saveduser.username + " Successfully created"));
         });
     });
 });

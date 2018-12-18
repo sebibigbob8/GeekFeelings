@@ -28,9 +28,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended: false}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-//TODO : https://www.npmjs.com/package/cors -> install cross plugin
-app.use(cors());
 
+app.use(cors());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/pictures', picturesRouter);
