@@ -61,14 +61,14 @@ router.get('/', function (req, res, next) {
     User.find().count(function (err, total) {
         if (err) {
             return next(err);
-        };
+        }
+        ;
         let query = User.find();
         //Filters
         if (typeof req.query.gender !== 'undefined') {
             query = query.where('gender', req.query.gender);
         }
         if (typeof req.query.npa !== 'undefined') {
-            console.log("Im here");
             query = query.where('npa', req.query.npa);
         }
 
@@ -92,6 +92,10 @@ router.get('/', function (req, res, next) {
         if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) {
             pageSize = 30;
         }
+        //Get usernames
+        if (typeof req.query.allUsername !== 'undefined') {
+            query = User.find().select('username');
+        }
         // Apply skip and limit to select the correct page of elements
         query = query.skip((page - 1) * pageSize).limit(pageSize);
         query.exec(function (err, docs) {
@@ -109,290 +113,325 @@ router.get('/', function (req, res, next) {
     });
 });
 /**
- * Get a user specified
- * @api {get} /users/:id Request a user's information
- * @apiName GetUser
- * @apiGroup User
- * @apiParam {Number} id Unique identifier of the user
- * @apiParam {Boolean} define this parameter return the number of pictures of the user
- *
- * @apiDefine userJSON
- * @apiSuccess {String} name First name of the user
- * @apiSuccess {String} username username of the user
- * @apiSuccess {String} password password of the user
- * @apiSuccess {String} street street of the user's adress
- * @apiSuccess {String} streetNumber street's number of the user's adress
- * @apiSuccess {Number} npa npa number of the user's adress
- * @apiSuccess {String} city city of the user's adress
- * @apiSuccess {Date} birthDate date of birth of the user
- * @apiSuccess {String} description description of the user
- * @apiSuccess {Array} tag table of centers of interests
- *
- * @apiExample Example
- * GET /api/users/5bd025513b4861db3e592062 HTTP/1.1
- *
- * @apiSuccessExample 200 OK
- *     HTTP/1.1 200 OK
- *     Content-Type: application/json
- *   {
- *       "tag": [],
- *       "_id": "5bd025513b4861db3e59205f",
- *       "name": "Gerianne",
- *       "username": "gpengilly2",
- *       "gender": "female",
- *       "street": "Bonner",
- *       "streetNumber": "4",
- *       "npa": 9855,
- *       "city": "Santa Ignacia",
- *       "dateBirth": "1962-04-10T22:57:50.000Z",
- *       "description": "Duis mattis egestas metus. Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est."
- *   }
+ * Verify the unicity
  */
-router.get('/:id', loadUserById, function (req, res, next) {
-    if (typeof req.query.nbPicture == 'undefined') {
-        res.status(200).send(req.user);
-    }else{
-        let query = User.find();
-        query.exec(function (err, users) {
-            if (err) {
-                next(err);
-            } else if (!users) {
-                return userNotFound(res, userId);
-            }
-            const userIds = users.map(userss => userss._id);
-
-            Picture.aggregate([
-                {
-                    $match: { // Select movies directed by the people we are interested in
-                        user: { $in: userIds }
-                    }
-                },
-                {
-                    $group: { // Group the documents by director ID
-                        _id: req.params.id,
-                        picturesCount: { // Count the number of movies for that ID
-                            $sum: 1
-                        }
-                    }
-                }
-            ], function(err, results) {
-                if(err)
-                    next(err);
-
-                results.find(function (item,i){
-                    const count = item.picturesCount;
-                    req.user.count = count;
-                });
-                res.status(200).send(""+req.user.count);
-
-            });
-        });
-    }
-});
-router.get('/:id/picture', loadUserById, getMyPictures, function (req, res, next) {
-    res.status(200).send(req.picture);
-});
-/**
- * Modify an user
- * @api {patch} /users/:id Request a user's information
- * @apiName updateUser
- * @apiGroup User
- * @apiParam {Number} id Unique identifier of the user
- *
- * @apiUse userJSON
- *
- * @apiExample Example
- *     PATCH /users/58b2926f5e1def0123e97281 HTTP/1.1
- *     Content-Type: application/json
- *
- *     {
- *       "description": "NEW MICHEAL JACKSON"
- *     }
- *
- * @apiSuccessExample 200 OK
- *     HTTP/1.1 200 OK
- *     Content-Type: application/json
- *   {
- *       "tag": [],
- *       "_id": "58b2926f5e1def0123e97281",
- *       "name": "Gerianne",
- *       "username": "gpengilly2",
- *       "gender": "female",
- *       "street": "Bonner",
- *       "streetNumber": "4",
- *       "npa": 9855,
- *       "city": "Santa Ignacia",
- *       "dateBirth": "1962-04-10T22:57:50.000Z",
- *       "description": "NEW MICHEAL JACKSON"
- *   }
- */
-router.patch('/:id', login.authenticate, loadUserById, function (req, res, next) {
-    if (req.currentUserId !== req.params.id) {
-        return res.status(403).send('Please mind your own things.')
-    }
-    if (req.body.street !== undefined) {
-        req.user.street = req.body.street;
-    }
-    if (req.body.streetNumber !== undefined) {
-        req.user.streetNumber = req.body.streetNumber;
-    }
-    if (req.body.npa !== undefined) {
-        req.user.npa = req.body.npa;
-    }
-    if (req.body.city !== undefined) {
-        req.user.city = req.body.city;
-    }
-    if (req.body.description !== undefined) {
-        req.user.description = req.body.description;
-    }
-
-    req.user.save(function (err, savedUser) {
+router.get('/unique/:username', function (req, res, next) {
+    let username = req.params.username;
+    let query = User.find().where('username', username);
+    let response;
+    query.exec(function (err, users) {
         if (err) {
-            return next(err);
-        }
-        console.log(`Updated user "${savedUser.title}"`);
-        res.status(200).send(savedUser);
+            next(err);
+        } else if (users.length > 0)
+            response = `{"Result" : false}`;
+        else
+            response = `{"Result" : true}`;
+
+
+
+        res.send(JSON.parse(response));
+
+    });
+
+});
+router.get('/unique', function (req, res, next) {
+    query = User.find().select('username');
+    query.exec(function (err, users) {
+        if (err) {
+            next(err);
+        } else
+            response = `{"data" : ${users}`;
+
+        res.send(users);
     });
 });
-/**
- * Create an user
- * Use of Bcrypt to protect the password
- * @api {post} /users Create a new user
- * @apiName createUser
- * @apiGroup User
- *
- * @apiParam {String} name First name of the user
- * @apiParam {String} username username of the user
- * @apiParam {String} password password of the user
- * @apiParam {String} street street of the user's adress
- * @apiParam {String} streetNumber street's number of the user's adress
- * @apiParam {Number} npa npa number of the user's adress
- * @apiParam {String} city city of the user's adress
- * @apiParam {Date} birthDate date of birth of the user
- * @apiParam {String} description description of the user
- * @apiParam {Array} tag table of centers of interests
- *
- *@apiExample
- *     POST /users HTTP/1.1
- *     Content-Type: application/json
- *   {
- *       *"tag": ["Patinage","pole dance"],
- *       "name": "Niska",
- *       "username": "grigny91",
- *       "password":"password",
- *       "gender": "other",
- *       *"street": "eqwer",
- *       *"streetNumber": "4",
- *       *"npa": 9855,
- *       "city": "Santa monica",
- *       "dateBirth": "1991-04-10T22:57:50.000Z",
- *       *"description": "W.L.G"
- *   }
- *
- *  @apiSuccessExample 201 OK
- *     HTTP/1.1 201 OK
- *     Content-Type: application/json
- *  {
- *      grigny91 Successfully created
- *  }
- */
-router.post('', function (req, res, next) {
-    const plainPassword = req.body.password;
-    const saltRounds = 10;
-    bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
-        req.body.password = hashedPassword;
-        new User(req.body).save(function (err, saveduser) {
+    /**
+     * Get a user specified
+     * @api {get} /users/:id Request a user's information
+     * @apiName GetUser
+     * @apiGroup User
+     * @apiParam {Number} id Unique identifier of the user
+     * @apiParam {Boolean} define this parameter return the number of pictures of the user
+     *
+     * @apiDefine userJSON
+     * @apiSuccess {String} name First name of the user
+     * @apiSuccess {String} username username of the user
+     * @apiSuccess {String} password password of the user
+     * @apiSuccess {String} street street of the user's adress
+     * @apiSuccess {String} streetNumber street's number of the user's adress
+     * @apiSuccess {Number} npa npa number of the user's adress
+     * @apiSuccess {String} city city of the user's adress
+     * @apiSuccess {Date} birthDate date of birth of the user
+     * @apiSuccess {String} description description of the user
+     * @apiSuccess {Array} tag table of centers of interests
+     *
+     * @apiExample Example
+     * GET /api/users/5bd025513b4861db3e592062 HTTP/1.1
+     *
+     * @apiSuccessExample 200 OK
+     *     HTTP/1.1 200 OK
+     *     Content-Type: application/json
+     *   {
+     *       "tag": [],
+     *       "_id": "5bd025513b4861db3e59205f",
+     *       "name": "Gerianne",
+     *       "username": "gpengilly2",
+     *       "gender": "female",
+     *       "street": "Bonner",
+     *       "streetNumber": "4",
+     *       "npa": 9855,
+     *       "city": "Santa Ignacia",
+     *       "dateBirth": "1962-04-10T22:57:50.000Z",
+     *       "description": "Duis mattis egestas metus. Aenean fermentum. Donec ut mauris eget massa tempor convallis. Nulla neque libero, convallis eget, eleifend luctus, ultricies eu, nibh. Quisque id justo sit amet sapien dignissim vestibulum. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nulla dapibus dolor vel est."
+     *   }
+     */
+    router.get('/:id', loadUserById, function (req, res, next) {
+        if (typeof req.query.nbPicture == 'undefined') {
+            res.status(200).send(req.user);
+        } else {
+            let query = User.find();
+            query.exec(function (err, users) {
+                if (err) {
+                    next(err);
+                } else if (!users) {
+                    return userNotFound(res, userId);
+                }
+                const userIds = users.map(userss => userss._id);
+
+                Picture.aggregate([
+                    {
+                        $match: { // Select movies directed by the people we are interested in
+                            user: {$in: userIds}
+                        }
+                    },
+                    {
+                        $group: { // Group the documents by director ID
+                            _id: req.params.id,
+                            picturesCount: { // Count the number of movies for that ID
+                                $sum: 1
+                            }
+                        }
+                    }
+                ], function (err, results) {
+                    if (err)
+                        next(err);
+
+                    results.find(function (item, i) {
+                        const count = item.picturesCount;
+                        req.user.count = count;
+                    });
+                    res.status(200).send("" + req.user.count);
+
+                });
+            });
+        }
+    });
+    router.get('/:id/picture', loadUserById, getMyPictures, function (req, res, next) {
+        res.status(200).send(req.picture);
+    });
+    /**
+     * Modify an user
+     * @api {patch} /users/:id Request a user's information
+     * @apiName updateUser
+     * @apiGroup User
+     * @apiParam {Number} id Unique identifier of the user
+     *
+     * @apiUse userJSON
+     *
+     * @apiExample Example
+     *     PATCH /users/58b2926f5e1def0123e97281 HTTP/1.1
+     *     Content-Type: application/json
+     *
+     *     {
+     *       "description": "NEW MICHEAL JACKSON"
+     *     }
+     *
+     * @apiSuccessExample 200 OK
+     *     HTTP/1.1 200 OK
+     *     Content-Type: application/json
+     *   {
+     *       "tag": [],
+     *       "_id": "58b2926f5e1def0123e97281",
+     *       "name": "Gerianne",
+     *       "username": "gpengilly2",
+     *       "gender": "female",
+     *       "street": "Bonner",
+     *       "streetNumber": "4",
+     *       "npa": 9855,
+     *       "city": "Santa Ignacia",
+     *       "dateBirth": "1962-04-10T22:57:50.000Z",
+     *       "description": "NEW MICHEAL JACKSON"
+     *   }
+     */
+    router.patch('/:id', login.authenticate, loadUserById, function (req, res, next) {
+        if (req.currentUserId !== req.params.id) {
+            return res.status(403).send('Please mind your own things.')
+        }
+        if (req.body.street !== undefined) {
+            req.user.street = req.body.street;
+        }
+        if (req.body.streetNumber !== undefined) {
+            req.user.streetNumber = req.body.streetNumber;
+        }
+        if (req.body.npa !== undefined) {
+            req.user.npa = req.body.npa;
+        }
+        if (req.body.city !== undefined) {
+            req.user.city = req.body.city;
+        }
+        if (req.body.description !== undefined) {
+            req.user.description = req.body.description;
+        }
+
+        req.user.save(function (err, savedUser) {
             if (err) {
                 return next(err);
             }
-            console.log(`Created user "${saveduser}"`);
-            res.status(201).send(JSON.parse(saveduser.username + " Successfully created"));
+            console.log(`Updated user "${savedUser.title}"`);
+            res.status(200).send(savedUser);
         });
     });
-});
-/**
- * Delete an user
- * @api {delete} /users/:id Delete an existing user
- * @apiName deleteUser
- * @apiGroup User
- *
- * @apiParam {Number} id Unique identifier of the user
- *
- * @apiExample Example
- *     DELETE /users/5bd025513b4861db3e592062 HTTP/1.1
- *
- * @apiSuccessExample 204 No Content
- *     HTTP/1.1 204 No Content
- *
- */
-router.delete('/:id', login.authenticate, loadUserById, function (req, res, next) {
-    let currentUser = User.findOne({username : req.body.username}).select("+password").exec(function(err, user) {
-        if(err)
-            next(err);
-        if (currentUser.username !== "admin") {
-            res.status(403).send("Contact an admin");
-        } else {
-            req.user.delete(function (err) {
+    /**
+     * Create an user
+     * Use of Bcrypt to protect the password
+     * @api {post} /users Create a new user
+     * @apiName createUser
+     * @apiGroup User
+     *
+     * @apiParam {String} name First name of the user
+     * @apiParam {String} username username of the user
+     * @apiParam {String} password password of the user
+     * @apiParam {String} street street of the user's adress
+     * @apiParam {String} streetNumber street's number of the user's adress
+     * @apiParam {Number} npa npa number of the user's adress
+     * @apiParam {String} city city of the user's adress
+     * @apiParam {Date} birthDate date of birth of the user
+     * @apiParam {String} description description of the user
+     * @apiParam {Array} tag table of centers of interests
+     *
+     *@apiExample
+     *     POST /users HTTP/1.1
+     *     Content-Type: application/json
+     *   {
+     *       *"tag": ["Patinage","pole dance"],
+     *       "name": "Niska",
+     *       "username": "grigny91",
+     *       "password":"password",
+     *       "gender": "other",
+     *       *"street": "eqwer",
+     *       *"streetNumber": "4",
+     *       *"npa": 9855,
+     *       "city": "Santa monica",
+     *       "dateBirth": "1991-04-10T22:57:50.000Z",
+     *       *"description": "W.L.G"
+     *   }
+     *
+     *  @apiSuccessExample 201 OK
+     *     HTTP/1.1 201 OK
+     *     Content-Type: application/json
+     *  {
+     *      grigny91 Successfully created
+     *  }
+     */
+    router.post('', function (req, res, next) {
+        const plainPassword = req.body.password;
+        const saltRounds = 10;
+        bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
+            req.body.password = hashedPassword;
+            new User(req.body).save(function (err, saveduser) {
                 if (err) {
                     return next(err);
                 }
-                console.log(`Deleted user "${req.user.name}"`);
-                res.sendStatus(204);
+                console.log(`Created user "${saveduser}"`);
+                let response = `{"status" : "Successfully created","username": "${saveduser.username}"}`;
+                res.status(201).send(JSON.parse(response));
             });
-        }
+        });
+    });
+    /**
+     * Delete an user
+     * @api {delete} /users/:id Delete an existing user
+     * @apiName deleteUser
+     * @apiGroup User
+     *
+     * @apiParam {Number} id Unique identifier of the user
+     *
+     * @apiExample Example
+     *     DELETE /users/5bd025513b4861db3e592062 HTTP/1.1
+     *
+     * @apiSuccessExample 204 No Content
+     *     HTTP/1.1 204 No Content
+     *
+     */
+    router.delete('/:id', login.authenticate, loadUserById, function (req, res, next) {
+        let currentUser = User.findOne({username: req.body.username}).select("+password").exec(function (err, user) {
+            if (err)
+                next(err);
+            if (currentUser.username !== "admin") {
+                res.status(403).send("Contact an admin");
+            } else {
+                req.user.delete(function (err) {
+                    if (err) {
+                        return next(err);
+                    }
+                    console.log(`Deleted user "${req.user.name}"`);
+                    res.sendStatus(204);
+                });
+            }
+        });
+
+
     });
 
-
-});
-
-/**
- * Load a user in the Request object depending of params given
- * param req
- * param res
- * param next
- */
-function loadUserById(req, res, next) {
-    let userId = req.params.id;
-    if (!ObjectId.isValid(userId)) {
-        return userNotFound(res, userId);
-    }
-    let query = User.findById(userId)
-    query.exec(function (err, user) {
-        if (err) {
-            next(err);
-        } else if (!user) {
+    /**
+     * Load a user in the Request object depending of params given
+     * param req
+     * param res
+     * param next
+     */
+    function loadUserById(req, res, next) {
+        let userId = req.params.id;
+        if (!ObjectId.isValid(userId)) {
             return userNotFound(res, userId);
         }
-        req.user = user;
-        next();
-    });
-}
+        let query = User.findById(userId)
+        query.exec(function (err, user) {
+            if (err) {
+                next(err);
+            } else if (!user) {
+                return userNotFound(res, userId);
+            }
+            req.user = user;
+            next();
+        });
+    }
 
-/**
- * Message in case of an "not found"
- * param res
- * param userId
- */
-function userNotFound(res, userId) {
-    return res.status(404).type('text').send(`No user found with ID ${userId}`);
-}
+    /**
+     * Message in case of an "not found"
+     * param res
+     * param userId
+     */
+    function userNotFound(res, userId) {
+        return res.status(404).type('text').send(`No user found with ID ${userId}`);
+    }
 
-/**
- *Get all pictures of the user
- *
- * param req
- * param res
- * param next
- */
-function getMyPictures(req, res, next) {
-    let query = Picture.find({"user" : req.params.id});
-    query.exec(function (err, pictures) {
-        if (err) {
-            next (err);
-        }
-        console.log(pictures);
-        req.picture = pictures;
-        next();
-    });
-}
-module.exports = router;
+    /**
+     *Get all pictures of the user
+     *
+     * param req
+     * param res
+     * param next
+     */
+    function getMyPictures(req, res, next) {
+        let query = Picture.find({"user": req.params.id});
+        query.exec(function (err, pictures) {
+            if (err) {
+                next(err);
+            }
+            console.log(pictures);
+            req.picture = pictures;
+            next();
+        });
+    }
+
+    module.exports = router;
