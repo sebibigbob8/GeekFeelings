@@ -289,7 +289,7 @@ router.patch('/:id', login.authenticate, loadUserById, function (req, res, next)
             return next(err);
         }
         console.log(`Updated user "${savedUser.title}"`);
-        res.status(200).send(savedUser);
+        res.status(200).send(JSON.parse(savedUser));
     });
 });
 /**
@@ -385,7 +385,7 @@ router.delete('/:id', login.authenticate, loadUserById, function (req, res, next
 });
 
 /**
- * Load a user in the Request object depending of params given
+ * Load a user in the Request object depending of params given, UPDATE : can be the username too
  * param req
  * param res
  * param next
@@ -394,7 +394,7 @@ function loadUserById(req, res, next) {
     let userId = req.params.id;
     let query = User;
     if (typeof req.query.username !== 'undefined') {
-        query = User.find().where('username', userIdg);
+        query = User.find().where('username', userId);
     }else if (!ObjectId.isValid(userId)) {
         return userNotFound(res, userId);
     }else{
