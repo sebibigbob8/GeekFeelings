@@ -307,14 +307,12 @@ router.patch('/:id', login.authenticate, loadUserById, function (req, res, next)
         req.user.tag = req.body.tag;
     }
 
-    console.log('Supposed to be a description :' + req.user);
-
     req.user.save(function (err, savedUser) {
         if (err) {
             return next(err);
         }
-        console.log(`Updated user "${savedUser.title}"`);
-        res.status(200).send(JSON.parse(savedUser));
+        console.log(`Updated user ${savedUser}`);
+        res.status(200).send(savedUser);//TODO: how to send this in JSON ->`{"newDescription":"${savedUser.description}","newTags":${savedUser.tag}}`
     });
 });
 /**
@@ -443,7 +441,7 @@ async function loadUserById(req, res, next) {
         })
     } else if (!ObjectId.isValid(userId)) {
         return userNotFound(res, userId);
-    }else{
+    } else {
         query = User.findById(userId);
         query.exec(function (err, user) {
             if (err) {
