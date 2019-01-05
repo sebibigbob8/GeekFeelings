@@ -58,11 +58,12 @@ const Picture = require('../models/picture');
  *       ]}
  */
 router.get('/', function (req, res, next) {
+    console.log("I try to do my job");
     User.find().count(function (err, total) {
         if (err) {
             return next(err);
         }
-        ;
+
         let query = User.find();
         //Filters
         if (typeof req.query.gender !== 'undefined') {
@@ -89,7 +90,7 @@ router.get('/', function (req, res, next) {
         }
         // Parse the "pageSize" param (default to 100 if invalid)
         let pageSize = parseInt(req.query.pageSize, 10);
-        if (isNaN(pageSize) || pageSize < 0 || pageSize > 100) {
+        if (isNaN(pageSize) || pageSize < 0 || pageSize > 200) {
             pageSize = 30;
         }
         //Get usernames
@@ -102,6 +103,7 @@ router.get('/', function (req, res, next) {
             if (err) {
                 next(err);
             } else {
+                //TODO : Bug pour postman ??
                 res.status(200).send({
                     page: page,
                     pageSize: pageSize,
@@ -264,10 +266,24 @@ router.get('/:id/picture', loadUserById, getMyPictures, function (req, res, next
  *       "description": "NEW MICHEAL JACKSON"
  *   }
  */
+//TODO : Check the correct user and manage asyncrone
 router.patch('/:id', login.authenticate, loadUserById, function (req, res, next) {
-    if (req.currentUserId !== req.params.id) {
+    let query = User;
+    if (typeof req.query.username !== 'undefined') {
+        /* query = User.findById(req.currentUserId);
+         query.exec(function (err, theUser) {
+             if (err) {
+                 next(err);
+             }
+             console.log("User Patch : " + theUser.username);
+             if (req.query.username !== theUser.username)
+                 return res.status(403).send('Please mind your own things.');
+         });*/
+    } else if (req.currentUserId !== req.params.id) {
+        console.log(req.currentUserId + " =? " + req.params.id);
         return res.status(403).send('Please mind your own things.')
     }
+
     if (req.body.street !== undefined) {
         req.user.street = req.body.street;
     }
@@ -283,6 +299,15 @@ router.patch('/:id', login.authenticate, loadUserById, function (req, res, next)
     if (req.body.description !== undefined) {
         req.user.description = req.body.description;
     }
+
+    if (req.body.dateBirth !== undefined) {
+        req.user.dateBirth = req.body.dateBirth;
+    }
+    if (req.body.tag !== undefined) {
+        req.user.tag = req.body.tag;
+    }
+
+    console.log('Supposed to be a description :' + req.user);
 
     req.user.save(function (err, savedUser) {
         if (err) {
@@ -339,6 +364,8 @@ router.post('', function (req, res, next) {
     const saltRounds = 10;
     bcrypt.hash(plainPassword, saltRounds, function (err, hashedPassword) {
         req.body.password = hashedPassword;
+        req.body.description = "";
+        req.body.tag = [];
         new User(req.body).save(function (err, saveduser) {
             if (err) {
                 return next(err);
@@ -390,28 +417,47 @@ router.delete('/:id', login.authenticate, loadUserById, function (req, res, next
  * param res
  * param next
  */
-function loadUserById(req, res, next) {
+//TODO: correct async code. how to properly declare query between the 2 exec functions ?
+
+async function loadUserById(req, res, next) {
     let userId = req.params.id;
-    let query = User;
+    let query = "";
     if (typeof req.query.username !== 'undefined') {
-        query = User.find().where('username', userId);
-    }else if (!ObjectId.isValid(userId)) {
+        let queryId = User.find().where('username', userId);
+        queryId.exec(function (err, id) {
+            if (err) {
+                next(err);
+            }
+            userId = id[0]._id;
+            query = User.findById(userId);
+            query.exec(function (err, user) {
+                if (err) {
+                    next(err);
+                } else if (!user) {
+                    return userNotFound(res, userId);
+                }
+                req.user = user;
+                console.log('loadUserById :' + req.user);
+                next();
+            });
+        })
+    } else if (!ObjectId.isValid(userId)) {
         return userNotFound(res, userId);
     }else{
-        query = User.findById(userId)
+        query = User.findById(userId);
+        query.exec(function (err, user) {
+            if (err) {
+                next(err);
+            } else if (!user) {
+                return userNotFound(res, userId);
+            }
+            req.user = user;
+            console.log('loadUserById :' + req.user);
+            next();
+        });
     }
 
 
-    query.exec(function (err, user) {
-        if (err) {
-            next(err);
-        } else if (!user) {
-            return userNotFound(res, userId);
-        }
-        console.log(user);
-        req.user = user;
-        next();
-    });
 }
 
 /**
