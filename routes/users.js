@@ -422,11 +422,12 @@ async function loadUserById(req, res, next) {
     let query = "";
     if (typeof req.query.username !== 'undefined') {
         let queryId = User.find().where('username', userId);
-        queryId.exec(function (err, id) {
+        await queryId.exec(function (err, id) {
             if (err) {
                 next(err);
             }
             userId = id[0]._id;
+            req.params.id = userId;
             query = User.findById(userId);
             query.exec(function (err, user) {
                 if (err) {
