@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7f17b373-0cdf-4a2a-93bb-ecaf42c7fa2b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="7f17b373-0cdf-4a2a-93bb-ecaf42c7fa2b" name="Default Changelist" comment="" />
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -178,12 +176,12 @@
       <workItem from="1547205269834" duration="3675000" />
       <workItem from="1547211703994" duration="132000" />
       <workItem from="1547454660062" duration="1401000" />
-      <workItem from="1547474800634" duration="2072000" />
+      <workItem from="1547474800634" duration="2361000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="67080000" />
+    <option name="totallyTimeSpent" value="67369000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -202,7 +200,7 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Inspection Results" order="9" weight="0.24186552" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.18093175" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="10" visible="true" weight="0.496208" />
       <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
