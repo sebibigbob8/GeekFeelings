@@ -77,6 +77,7 @@ router.get('/:id', loadPictureFromParamsMiddleware, function (req, res, next) {
  */
 router.get('/', function (req, res, next) {
     //Count total pictures matching the URL query parameters
+    console.log("CurrentUser : "+ req.currentUserId);
     const countQuery = queryPictures(req);
 
     countQuery.count(function (err, total) {
@@ -99,7 +100,6 @@ router.get('/', function (req, res, next) {
             if (err) {
                 return next(err);
             }
-
             res.send(pictures);
         });
     });
