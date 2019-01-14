@@ -1,13 +1,14 @@
 const mongoose = require('mongoose');
 var bcrypt = require('bcryptjs');
+const userSchema = require('./user')
 const Schema = mongoose.Schema;
 var softDelete = require('mongoose-delete');
 
 // Define the schema for rdvs
 const rdvSchema = new Schema({
 
-    creator: {
-        type: String,
+    creator: { 
+        type: Schema.Types.ObjectId, ref: 'User',
         required: true
     },
 
