@@ -4,6 +4,7 @@ const MONGOOSE = require('mongoose');
 const Rdv = require('../models/rdv');
 const ObjectId = MONGOOSE.Types.ObjectId;
 const login = require("./login");
+const https = require('https');
 
 
 /**
@@ -53,7 +54,7 @@ const login = require("./login");
  *        "__v": 0
  *       }
  */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     let query = Rdv.find();
     if (typeof req.query.city !== 'undefined') {
         query = query.where('city', req.query.city);
@@ -64,18 +65,17 @@ router.get('/', function(req, res, next) {
     if (typeof req.query.creator !== 'undefined') {
         query = query.where('creator', req.query.creator);
     }
-    query.exec(function (err,docs){
-        if (err)  {
+    query.exec(function (err, docs) {
+        if (err) {
             console.warn("Could not get all rdvs");
             next(err);
-        }
-        else{
+        } else {
             res.send(docs);
         }
     });
 });
 
- /**
+/**
  * Get a specified rdv
  * @api {get} /api/rdvs/:id Get a rdv by ID
  * @apiName RetrieveRdv
@@ -106,26 +106,27 @@ router.get('/', function(req, res, next) {
  *        "__v": 0
  *       }
  */
-router.get('/:id',loadRdvById, login.authenticate, function(req, res, next) {
+router.get('/:id', loadRdvById, login.authenticate, function (req, res, next) {
     let query = Rdv.find({});
-    query.exec(function (err,docs){
-        if (err){
+    query.exec(function (err, docs) {
+        if (err) {
             console.warn("Could not get all rdvs");
             next(err);
-        }else{
+        } else {
             res.send(req.rdv);
         }
     });
 });
 
- /**
-* @api {patch} /api/rdvs/:id Partially update a rdv
-* @apiName PartiallyUpdateRdv
-* @apiGroup Rdv
-* @apiVersion 1.0.0
-* @apiDescription Partially updates a rdv's data
-*
-* @apiExample Example
+
+/**
+ * @api {patch} /api/rdvs/:id Partially update a rdv
+ * @apiName PartiallyUpdateRdv
+ * @apiGroup Rdv
+ * @apiVersion 1.0.0
+ * @apiDescription Partially updates a rdv's data
+ *
+ * @apiExample Example
  *     PATCH /api/rdvs/5bd7169e8b1b7182a0290f37
  *
  *     {
@@ -151,7 +152,7 @@ router.get('/:id',loadRdvById, login.authenticate, function(req, res, next) {
  *     "__v": 0
  *     }
  */
-router.patch('/:id',loadRdvById, login.authenticate, function(req, res, next) {
+router.patch('/:id', loadRdvById, login.authenticate, function (req, res, next) {
     if (req.body.creator !== undefined) {
         req.rdv.creator = req.body.creator;
     }
@@ -178,7 +179,7 @@ router.patch('/:id',loadRdvById, login.authenticate, function(req, res, next) {
     }
 
 
-    req.rdv.save(function(err, savedRdv) {
+    req.rdv.save(function (err, savedRdv) {
         if (err) {
             return next(err);
         }
@@ -186,7 +187,6 @@ router.patch('/:id',loadRdvById, login.authenticate, function(req, res, next) {
         res.send(savedRdv);
     });
 });
-
 
 
 /**
@@ -242,14 +242,14 @@ router.patch('/:id',loadRdvById, login.authenticate, function(req, res, next) {
  *     "__v": 0
  *     }
  */
-router.post('', login.authenticate, function(req, res, next) {
+router.post('', login.authenticate, function (req, res, next) {
     let currentUserId = req.currentUserId;
     console.log("55555");
     console.log(currentUserId);
 
     req.body.date = new Date();
     req.body.creator = req.currentUserId;
-    new Rdv(req.body).save(function(err, savedrdv) {
+    new Rdv(req.body).save(function (err, savedrdv) {
         if (err) {
             return next(err);
         }
@@ -263,7 +263,7 @@ router.post('', login.authenticate, function(req, res, next) {
  * Delete a rdv   OKKKKKKK
  */
 
- /**
+/**
  * @api {delete} /api/rdvs/:id Delete a rdv
  * @apiName DeleteRdv
  * @apiGroup Rdv
@@ -278,8 +278,8 @@ router.post('', login.authenticate, function(req, res, next) {
  * @apiSuccessExample 204 No Content
  *     HTTP/1.1 204 No Content
  */
-router.delete('/:id', loadRdvById, login.authenticate, function(req, res, next) {
-    req.rdv.delete(function(err) {
+router.delete('/:id', loadRdvById, login.authenticate, function (req, res, next) {
+    req.rdv.delete(function (err) {
         if (err) {
             return next(err);
         }
@@ -292,26 +292,26 @@ router.delete('/:id', loadRdvById, login.authenticate, function(req, res, next) 
  * Middleware that loads the rdv corresponding to the ID in the URL path.
  * Responds with 404 Not Found if the ID is not valid or the rdv does not exist.
  */
-function loadRdvById(req, res, next){
+function loadRdvById(req, res, next) {
     const rdvId = req.params.id;
     if (!ObjectId.isValid(rdvId)) {
         return rdvNotFound(res, rdvId);
     }
 
     let query = Rdv.findById(rdvId)
-    query.exec(function(err, rdv) {
+    query.exec(function (err, rdv) {
         if (err) {
             console.warn("Could not get the rdv");
             return next(err);
         } else if (!rdv) {
             return rdvNotFound(res, rdvId);
-        }
-        else{
-          req.rdv = rdv;
-          next();
+        } else {
+            req.rdv = rdv;
+            next();
         }
     });
 }
+
 /**
  * Message in case of a "not found"
  * param res
@@ -322,5 +322,28 @@ function rdvNotFound(res, rdvId) {
     return res.status(404).type('text').send(`No rdv found with ID:  ${rdvId}`);
 }
 
+router.get('/address/', function (req, res, next) {
+    //TODO: Comment gérer la hirarchie des routes
+    let googleMap = 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyD2OEFmmyLRfRMYPgu8-kcYiW-2C18Qt40&address=';
+    if (typeof req.body.address === 'undefined')
+        return next(error('No address'));
+    let url = googleMap + req.body.address;
+    https.get(url, (resp) => {
+        let data = '';
+        // A chunk of data has been recieved.
+        resp.on('data', (chunk) => {
+            data += chunk;
+        });
+
+        // The whole response has been received. Print out the result.
+        resp.on('end', () => {
+            console.log(data);
+        });
+
+    }).on("error", (err) => {
+        console.log("Error: " + err.message);
+    });
+    res.status(200).send(req.rdv);
+});
 
 module.exports = router;

@@ -52,6 +52,12 @@ const rdvSchema = new Schema({
         type : String,
         required: true
     },
+    long:{
+        type: Number
+    },
+    lat:{
+        type: Number
+    }
 });
 
 rdvSchema.plugin(softDelete);
