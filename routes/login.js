@@ -48,6 +48,7 @@ router.post('',function(req, res, next) {
             const claims = { sub: user._id.toString(), exp: exp };
             jwt.sign(claims, secretKey, function(err, token) {
                 if (err) { return next(err); }
+                //Todo: Delete user id returns, do we really need it ?
                 res.send({ token: token,id: user._id }); // Send the token to the client.
             });
         });
@@ -62,6 +63,7 @@ router.post('',function(req, res, next) {
  */
 function authenticate(req, res, next) {
     // Ensure the header is present.
+
     const authorization = req.get('Authorization');
     if (!authorization) {
         return res.status(401).send('Authorization header is missing');
