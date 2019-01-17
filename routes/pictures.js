@@ -79,10 +79,11 @@ router.get('/', function (req, res, next) {
     //Count total pictures matching the URL query parameters
     console.log("CurrentUser : "+ req.currentUserId);
     const countQuery = queryPictures(req);
-
-    countQuery.count(function (err, total) {
-
-        if (err) {
+    
+    console.log(currentUserId);
+    countQuery.count(function(err, total) {
+        
+        if(err) {
             console.warn("Could not get all pictures");
             return next(err);
         }
