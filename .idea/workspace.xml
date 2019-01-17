@@ -97,10 +97,10 @@
         <option value="$PROJECT_DIR$/apidoc.json" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/models/user.js" />
-        <option value="$PROJECT_DIR$/models/picture.js" />
         <option value="$PROJECT_DIR$/routes/users.js" />
         <option value="$PROJECT_DIR$/routes/login.js" />
         <option value="$PROJECT_DIR$/routes/pictures.js" />
+        <option value="$PROJECT_DIR$/models/picture.js" />
       </list>
     </option>
   </component>
@@ -207,12 +207,12 @@
       <workItem from="1547454660062" duration="1401000" />
       <workItem from="1547474800634" duration="3558000" />
       <workItem from="1547710744795" duration="681000" />
-      <workItem from="1547714273308" duration="1521000" />
+      <workItem from="1547714273308" duration="4219000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="70768000" />
+    <option name="totallyTimeSpent" value="73466000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
@@ -235,8 +235,15 @@
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
+<<<<<<< HEAD
       <window_info id="npm" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+=======
+      <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Inspection Results" order="9" weight="0.24186552" />
+      <window_info anchor="bottom" id="Terminal" order="10" visible="true" weight="0.21885157" />
+      <window_info anchor="bottom" id="Event Log" order="11" side_tool="true" />
+>>>>>>> 6c3ab34f839d6982f84e936623ed44535299802f
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Inspection Results" order="9" weight="0.24186552" />
@@ -293,12 +300,16 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/routes/peoples.js" />
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/routes/pictures.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-4241" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models/picture.js">
+=======
+    <entry file="file://$PROJECT_DIR$/models/user.js">
+>>>>>>> 6c3ab34f839d6982f84e936623ed44535299802f
       <provider selected="true" editor-type-id="text-editor">
         <state />
       </provider>
@@ -322,6 +333,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
@@ -333,13 +345,39 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="900">
           <caret line="60" column="17" selection-start-line="60" selection-start-column="17" selection-end-line="60" selection-end-column="17" />
+=======
+    <entry file="file://$PROJECT_DIR$/routes/login.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="48" column="62" lean-forward="true" selection-start-line="48" selection-start-column="62" selection-end-line="48" selection-end-column="62" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/routes/pictures.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="194" column="7" selection-start-line="194" selection-start-column="7" selection-end-line="194" selection-end-column="7" />
+>>>>>>> 6c3ab34f839d6982f84e936623ed44535299802f
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/models/rdv.js">
+<<<<<<< HEAD
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="6" selection-start-line="6" selection-end-line="53" selection-end-column="3" />
+=======
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="680">
+          <caret line="40" column="4" selection-start-line="40" selection-start-column="4" selection-end-line="40" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/models/picture.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="15" column="20" selection-start-line="15" selection-start-column="20" selection-end-line="15" selection-end-column="20" />
+>>>>>>> 6c3ab34f839d6982f84e936623ed44535299802f
         </state>
       </provider>
     </entry>

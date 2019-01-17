@@ -62,6 +62,7 @@ router.post('',function(req, res, next) {
  */
 function authenticate(req, res, next) {
     // Ensure the header is present.
+
     const authorization = req.get('Authorization');
     if (!authorization) {
         return res.status(401).send('Authorization header is missing');
