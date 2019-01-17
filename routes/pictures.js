@@ -193,6 +193,7 @@ router.post('',login.authenticate, function (req, res, next) {
     /**
      * Create a picture
      */
+    console.log("EHHHHHHHHHHHHHH");
     req.body.user = req.currentUserId;
 
     new Picture(req.body).save(function (err, savedPicture) {
