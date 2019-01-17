@@ -188,7 +188,7 @@ router.patch('/:id', login.authenticate, loadPictureFromParamsMiddleware, functi
  *
  */
 
-router.post('',login.authenticate(), function (req, res, next) {
+router.post('',login.authenticate, function (req, res, next) {
     /**
      * Create a picture
      */
