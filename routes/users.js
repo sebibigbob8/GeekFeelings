@@ -8,6 +8,7 @@ const jwt = require('jsonwebtoken');
 const secretKey = process.env.SECRET_KEY || 'keykey-DoYouLoveMe';
 const login = require("./login");
 const Picture = require('../models/picture');
+const Rdv = require('../models/rdv');
 /**
  * Get all users,Pagination depending of the amount of users and the client's needs
  * @api {get} /users Request all users
@@ -230,6 +231,11 @@ router.get('/:id', loadUserById, function (req, res, next) {
 router.get('/:id/picture', loadUserById, getMyPictures, function (req, res, next) {
     res.status(200).send(req.picture);
 });
+
+router.get('/:id/rdv', loadUserById, getMyRdvs, function (req, res, next) {
+    res.status(200).send(req.rdv);
+});
+
 
 
 /**
@@ -483,6 +489,18 @@ function getMyPictures(req, res, next) {
         }
         console.log(pictures);
         req.picture = pictures;
+        next();
+    });
+}
+
+function getMyRdvs(req, res, next) {
+    let query = Rdv.find({"creator": req.params.id});
+    query.exec(function (err, rdvs) {
+        if (err) {
+            next(err);
+        }
+        console.log(rdvs);
+        req.rdv = rdvs;
         next();
     });
 }
