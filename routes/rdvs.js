@@ -153,7 +153,6 @@ router.get('/:id',loadRdvById, login.authenticate, function(req, res, next) {
  */
 router.patch('/:id',loadRdvById, login.authenticate, function(req, res, next) {
     if (req.body.creator !== undefined) {
-        //req.rdv.creator = req.body.creator;
         req.rdv.creator = req.body.creator;
     }
     if (req.body.guest !== undefined) {

@@ -97,7 +97,10 @@
         <option value="$PROJECT_DIR$/apidoc.json" />
         <option value="$PROJECT_DIR$/app.js" />
         <option value="$PROJECT_DIR$/models/user.js" />
+        <option value="$PROJECT_DIR$/models/picture.js" />
         <option value="$PROJECT_DIR$/routes/users.js" />
+        <option value="$PROJECT_DIR$/routes/login.js" />
+        <option value="$PROJECT_DIR$/routes/pictures.js" />
       </list>
     </option>
   </component>
@@ -192,12 +195,24 @@
       <workItem from="1546420105896" duration="5481000" />
       <workItem from="1546433960531" duration="2656000" />
       <workItem from="1546598302235" duration="9830000" />
-      <workItem from="1546688605366" duration="4854000" />
+      <workItem from="1546688605366" duration="5381000" />
+      <workItem from="1546787616104" duration="12000" />
+      <workItem from="1546787679957" duration="598000" />
+      <workItem from="1546932823103" duration="585000" />
+      <workItem from="1546948463177" duration="3000" />
+      <workItem from="1546972967051" duration="2859000" />
+      <workItem from="1547198825999" duration="1568000" />
+      <workItem from="1547205269834" duration="3675000" />
+      <workItem from="1547211703994" duration="132000" />
+      <workItem from="1547454660062" duration="1401000" />
+      <workItem from="1547474800634" duration="3558000" />
+      <workItem from="1547710744795" duration="681000" />
+      <workItem from="1547714273308" duration="1521000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="53648000" />
+    <option name="totallyTimeSpent" value="70768000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />

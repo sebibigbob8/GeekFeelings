@@ -32,10 +32,9 @@ const User = require('../models/user');
  *          "__v": 0
  *      },
  */
-router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
+router.get('/:id', loadPictureFromParamsMiddleware, function (req, res, next) {
     res.send(req.picture);
 });
-
 
 
 /**
@@ -51,7 +50,7 @@ router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
  * @apiSuccess src source of the picture
  * @apiSuccess description description of the picture
  * @apiSuccess user user id of the user who uploaded the picture
- * 
+ *
  * @apiExample
  *      GET /api/pictures?user=5bd6dab42db32a3e8c4e1124 HTTP/1.1
  *
@@ -76,8 +75,9 @@ router.get('/:id',loadPictureFromParamsMiddleware, function(req, res, next) {
  *      }
  *   ]
  */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
     //Count total pictures matching the URL query parameters
+    console.log("CurrentUser : "+ req.currentUserId);
     const countQuery = queryPictures(req);
     
     console.log(currentUserId);
@@ -87,21 +87,20 @@ router.get('/', function(req, res, next) {
             console.warn("Could not get all pictures");
             return next(err);
         }
-    
+
         //Prepare the initial database query from the URL query parameters
         let query = queryPictures(req);
-        
+
         //Take all the pictures from a particular user
         if (ObjectId.isValid(req.query.user)) {
             query = query.where('user').equals(req.query.user);
         }
-        
+
         //Execute the query
-        query.sort({ title: 1 }).exec(function(err, pictures) {
-            if(err){
+        query.sort({title: 1}).exec(function (err, pictures) {
+            if (err) {
                 return next(err);
             }
-            
             res.send(pictures);
         });
     });
@@ -118,7 +117,7 @@ router.get('/', function(req, res, next) {
  * @apiExample Example
  *      PATCH /api/pictures/5bd709cd2832dd1b5c723b46 HTTP/1.1
  *      Content-Type: application/json
- *      
+ *
  *      {    
  *          "description": "Vacations in Thailand, was awesome !"
  *      }
@@ -135,26 +134,26 @@ router.get('/', function(req, res, next) {
  *       "__v": 0
  *      }
  */
-router.patch('/:id', login.authenticate, loadPictureFromParamsMiddleware, function(req, res, next) {
+router.patch('/:id', login.authenticate, loadPictureFromParamsMiddleware, function (req, res, next) {
     if (req.currentUserId !== req.params.id) {
         return res.status(403).send('Not your picture.')
     }
     //Verify if the description is undefined
     //if not modify the description
-    if(req.body.description !== undefined) {
+    if (req.body.description !== undefined) {
         req.picture.description = req.body.description;
     }
-    
-    if(req.body.src !== undefined) {
+
+    if (req.body.src !== undefined) {
         req.picture.src = req.body.src;
     }
-    
-    req.picture.save(function(err, savedPicture) {
-        if(err) {
+
+    req.picture.save(function (err, savedPicture) {
+        if (err) {
             return next(err);
         }
-    console.log(`Updated picture "${savedPicture.title}`);
-    res.send(savedPicture);
+        console.log(`Updated picture "${savedPicture.title}`);
+        res.send(savedPicture);
     });
 });
 
@@ -179,7 +178,7 @@ router.patch('/:id', login.authenticate, loadPictureFromParamsMiddleware, functi
  * @apiSuccessExample 201 Created
  *      HTTP/1.1 201 Created
  *      Content-Type: application/json
- *     
+ *
  *      {
  *          "user": "5bd6drb42rb32a3e8c4e1124",
  *          "_id": "58b2926f5e1def0123e97281",
@@ -190,20 +189,19 @@ router.patch('/:id', login.authenticate, loadPictureFromParamsMiddleware, functi
  *
  */
 
-router.post('', function(req, res, next) {
+router.post('',login.authenticate, function (req, res, next) {
     /**
      * Create a picture
      */
-    new Picture(req.body).save(function(err, savedPicture){
-    if (err) {
-        return next(err);
-    }
-    
-    console.log(`Created picture "${savedPicture.src}"`);
-    
-    res.status(201).send(savedPicture);
-    });    
-    
+    req.body.user = this.currentUserId;
+    new Picture(req.body).save(function (err, savedPicture) {
+        if (err) {
+            return next(err);
+        }
+        console.log(`Created picture "${savedPicture.src}"`);
+        res.status(201).send(savedPicture);
+    });
+
 });
 
 
@@ -220,20 +218,19 @@ router.post('', function(req, res, next) {
  *      HTTP/1.1 204 No Content
  *
  */
-router.delete('/:id', login.authenticate, loadPictureFromParamsMiddleware, function(req, res, next) {
-    
+router.delete('/:id', login.authenticate, loadPictureFromParamsMiddleware, function (req, res, next) {
+
     if (req.currentUserId !== req.params.id) {
         return res.status(403).send('Not your picture.')
     }
-    req.picture.delete(function(err) {
+    req.picture.delete(function (err) {
         if (err) {
             return next(err);
         }
         console.log(`Deleted picture "${req.picture.src}`);
         res.sendStatus(204);
-    }) ;
+    });
 });
-
 
 
 /**
@@ -242,12 +239,12 @@ router.delete('/:id', login.authenticate, loadPictureFromParamsMiddleware, funct
 function queryPictures(req) {
 
     let query = Picture.find();
-    
-    if (typeof(req.query.src) == 'string') {
+
+    if (typeof (req.query.src) == 'string') {
         query = query.where('src').equals(req.query.src);
     }
 
-    if (typeof(req.query.description) == 'string') {
+    if (typeof (req.query.description) == 'string') {
         query = query.where('description').equals(req.query.description);
     }
 
@@ -259,22 +256,22 @@ function queryPictures(req) {
  * Middleware that loads the picture
  * Responds with 404 Not Found if the ID is not valid or the movie doesn't exist.
  */
-function loadPictureFromParamsMiddleware(req,res,next) {
-    
+function loadPictureFromParamsMiddleware(req, res, next) {
+
     const pictureId = req.params.id;
-    if(!ObjectId.isValid(pictureId)) {
+    if (!ObjectId.isValid(pictureId)) {
         return pictureNotFound(res, pictureId);
     }
-    
+
     let query = Picture.findById(pictureId)
-    
-    query.exec(function(err, picture) {
-        if(err) {
+
+    query.exec(function (err, picture) {
+        if (err) {
             return next(err);
         } else if (!picture) {
             return pictureNotFound(res, pictureId);
         }
-        
+
         req.picture = picture;
         next();
     });
@@ -285,7 +282,7 @@ function loadPictureFromParamsMiddleware(req,res,next) {
  * Responds with 404 Not Found and a message indicating that the movie with the specified ID was not found.
  */
 function pictureNotFound(res, pictureId) {
-  return res.status(404).type('text').send(`No picture found with ID ${pictureId}`);
+    return res.status(404).type('text').send(`No picture found with ID ${pictureId}`);
 }
 
 

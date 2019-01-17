@@ -48,7 +48,11 @@ router.post('',function(req, res, next) {
             const claims = { sub: user._id.toString(), exp: exp };
             jwt.sign(claims, secretKey, function(err, token) {
                 if (err) { return next(err); }
+<<<<<<< HEAD
                 res.send({ token: token, user: user }); // Send the token to the client.
+=======
+                res.send({ token: token,id: user._id }); // Send the token to the client.
+>>>>>>> c4988db13ff5d320dbee560538196f42ce8489f6
             });
         });
     })

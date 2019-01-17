@@ -417,18 +417,19 @@ router.delete('/:id', login.authenticate, loadUserById, function (req, res, next
  * param res
  * param next
  */
-//TODO: correct async code. how to properly declare query between the 2 exec functions ?
+//TODO: correct async code. how to properly declare query between the 2 exec functions ? Use findOne instead of find
 
 async function loadUserById(req, res, next) {
     let userId = req.params.id;
     let query = "";
     if (typeof req.query.username !== 'undefined') {
         let queryId = User.find().where('username', userId);
-        queryId.exec(function (err, id) {
+        await queryId.exec(function (err, id) {
             if (err) {
                 next(err);
             }
             userId = id[0]._id;
+            req.params.id = userId;
             query = User.findById(userId);
             query.exec(function (err, user) {
                 if (err) {
@@ -456,8 +457,6 @@ async function loadUserById(req, res, next) {
             next();
         });
     }
-
-
 }
 
 /**
