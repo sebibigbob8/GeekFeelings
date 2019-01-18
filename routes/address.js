@@ -8,10 +8,8 @@ const NodeGeocoder = require('node-geocoder');
  * Google Map API geocode request
  * Give an address in request and get a position back
  */
-router.get('/', async function (req, res, next) {
-    //TODO: Comment gérer la hirarchie des routes
-    let data ="";
-    if (typeof req.body.address === 'undefined')
+router.get('/:address', async function (req, res, next) {
+    if (typeof req.params.address === 'undefined')
         return next(new Error("No address"));
     var options = {
         provider: 'google',
@@ -20,7 +18,7 @@ router.get('/', async function (req, res, next) {
         formatter: null
     };
     var geocoder = NodeGeocoder(options);
-    geocoder.geocode(req.body.address)
+    geocoder.geocode(req.params.address)
         .then(function(data) {
             res.status(200).send(data);
         })
