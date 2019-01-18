@@ -4,7 +4,6 @@ const MONGOOSE = require('mongoose');
 const Rdv = require('../models/rdv');
 const ObjectId = MONGOOSE.Types.ObjectId;
 const login = require("./login");
-const https = require('https');
 
 
 /**
@@ -322,28 +321,5 @@ function rdvNotFound(res, rdvId) {
     return res.status(404).type('text').send(`No rdv found with ID:  ${rdvId}`);
 }
 
-router.get('/address/', function (req, res, next) {
-    //TODO: Comment gérer la hirarchie des routes
-    let googleMap = 'https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyD2OEFmmyLRfRMYPgu8-kcYiW-2C18Qt40&address=';
-    if (typeof req.body.address === 'undefined')
-        return next(error('No address'));
-    let url = googleMap + req.body.address;
-    https.get(url, (resp) => {
-        let data = '';
-        // A chunk of data has been recieved.
-        resp.on('data', (chunk) => {
-            data += chunk;
-        });
-
-        // The whole response has been received. Print out the result.
-        resp.on('end', () => {
-            console.log(data);
-        });
-
-    }).on("error", (err) => {
-        console.log("Error: " + err.message);
-    });
-    res.status(200).send(req.rdv);
-});
 
 module.exports = router;

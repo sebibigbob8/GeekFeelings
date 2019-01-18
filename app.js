@@ -8,6 +8,7 @@ var usersRouter = require('./routes/users');
 var picturesRouter = require('./routes/pictures');
 var loginRouter = require('./routes/login');
 var rdvsRouter = require('./routes/rdvs');
+var addressRouter = require('./routes/address');
 var cors = require('cors');
 
 var app = express();
@@ -35,6 +36,7 @@ app.use('/users', usersRouter);
 app.use('/pictures', picturesRouter);
 app.use('/login',loginRouter);
 app.use('/rdvs',rdvsRouter);
+app.use('/address',addressRouter);
 
 
 // catch 404 and forward to error handler
