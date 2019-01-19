@@ -487,7 +487,6 @@ function getMyPictures(req, res, next) {
         if (err) {
             next(err);
         }
-        console.log(pictures);
         req.picture = pictures;
         next();
     });
@@ -499,7 +498,6 @@ function getMyRdvs(req, res, next) {
         if (err) {
             next(err);
         }
-        console.log(rdvs);
         req.rdv = rdvs;
         next();
     });
