@@ -53,7 +53,8 @@ const login = require("./login");
  *        "__v": 0
  *       }
  */
-router.get('/', function (req, res, next) {
+router.get('/', login.authenticate, function (req, res, next) {
+    console.log("Normal Get");
     let query = Rdv.find();
     if (typeof req.query.city !== 'undefined') {
         query = query.where('city', req.query.city);
@@ -63,6 +64,10 @@ router.get('/', function (req, res, next) {
     }
     if (typeof req.query.creator !== 'undefined') {
         query = query.where('creator', req.query.creator);
+    }
+    if (typeof req.query.notmine !== 'undefined') {
+        console.log("Not mine please")
+        query = query.find( { creator: { $ne: req.currentUserId } } );
     }
     query.exec(function (err, docs) {
         if (err) {
@@ -114,6 +119,19 @@ router.get('/:id', loadRdvById, login.authenticate, function (req, res, next) {
         } else {
             res.send(req.rdv);
         }
+    });
+});
+router.get('/notmine/', loadRdvById, login.authenticate, function (req, res, next) {
+    let query = Rdv.find().where('creator', req.currentUserId);
+    query.exec(function (err, rdvs) {
+        if (err) {
+            next(err);
+        }
+        if (!rdvs)
+            res.send("There is no RDVS");
+
+        res.send(rdvs);
+
     });
 });
 
@@ -243,8 +261,6 @@ router.patch('/:id', loadRdvById, login.authenticate, function (req, res, next) 
  */
 router.post('', login.authenticate, function (req, res, next) {
     let currentUserId = req.currentUserId;
-    console.log("55555");
-    console.log(currentUserId);
 
     req.body.date = new Date();
     req.body.creator = req.currentUserId;

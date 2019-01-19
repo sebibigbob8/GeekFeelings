@@ -502,5 +502,4 @@ function getMyRdvs(req, res, next) {
         next();
     });
 }
-
 module.exports = router;
