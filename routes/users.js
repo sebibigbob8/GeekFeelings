@@ -272,7 +272,7 @@ router.get('/:id/rdv', loadUserById, getMyRdvs, function (req, res, next) {
  *       "description": "NEW MICHEAL JACKSON"
  *   }
  */
-//TODO : Check the correct user and manage asyncrone
+//TODO : Manage asyncrone
 router.patch('/:id', login.authenticate, loadUserById, function (req, res, next) {
     let query = User;
     if (typeof req.query.username !== 'undefined') {

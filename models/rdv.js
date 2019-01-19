@@ -15,7 +15,7 @@ const rdvSchema = new Schema({
         required: true
     },
     guest: {
-        type: String,
+        type: Array,
         required: false
     },
     city: {
