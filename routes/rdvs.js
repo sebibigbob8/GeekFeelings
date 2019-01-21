@@ -67,7 +67,7 @@ router.get('/', login.authenticate, function (req, res, next) {
     }
     if (typeof req.query.notmine !== 'undefined') {
         console.log("Not mine please")
-        query = query.find( { creator: { $ne: req.currentUserId } } );
+        query = query.find({creator: {$ne: req.currentUserId}});
     }
     query.exec(function (err, docs) {
         if (err) {
@@ -173,9 +173,6 @@ router.patch('/:id', loadRdvById, login.authenticate, function (req, res, next) 
     if (req.body.creator !== undefined) {
         req.rdv.creator = req.body.creator;
     }
-    if (req.body.guest !== undefined) {
-        req.rdv.guest = req.body.guest;
-    }
     if (req.body.city !== undefined) {
         req.rdv.city = req.body.city;
     }
@@ -194,14 +191,27 @@ router.patch('/:id', loadRdvById, login.authenticate, function (req, res, next) 
     if (req.body.date !== undefined) {
         req.rdv.date = req.body.date;
     }
-
-
+    if (req.body.guest !== undefined) {
+        let newGuestId = req.currentUserId;
+        let guests = req.rdv.guest;
+        let alreadyIn = false;
+        for (let guest of guests) {
+            if (guest.id === newGuestId) {
+                alreadyIn = true;
+                break;
+            }
+        }
+        if (alreadyIn)
+            return next(error("You are alreadyIn"));
+        guests.push(newGuestId);
+        req.body.guest = guests;
+    }
     req.rdv.save(function (err, savedRdv) {
         if (err) {
             return next(err);
         }
-        console.log(`Updated rdv "${savedRdv.purposeTitle}"`);
-        res.send(savedRdv);
+        console.log("Updated rdv",savedRdv);
+        res.send(savedRdv).status(200);
     });
 });
 
