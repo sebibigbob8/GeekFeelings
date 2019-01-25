@@ -191,6 +191,9 @@ router.patch('/:id', loadRdvById, login.authenticate, function (req, res, next) 
     if (req.body.date !== undefined) {
         req.rdv.date = req.body.date;
     }
+    if (req.body.purposeTitle !== undefined) {
+        req.rdv.purposeTitle = req.body.purposeTitle;
+    }
     if (req.body.guest !== undefined) {
         let newGuestId = req.currentUserId;
         let guests = req.rdv.guest;
