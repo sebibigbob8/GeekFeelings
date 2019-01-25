@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const https = require('https');
-const config = require('../config/config');
+//const config = require('../config/config');
 const NodeGeocoder = require('node-geocoder');
 
 /**
@@ -14,7 +14,7 @@ router.get('/:address', async function (req, res, next) {
     var options = {
         provider: 'google',
         httpAdapter: 'https',
-        apiKey: config.googleKey,
+        apiKey: process.env.GOOGLE_KEY,
         formatter: null
     };
     var geocoder = NodeGeocoder(options);
