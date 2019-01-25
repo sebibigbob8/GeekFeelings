@@ -6,6 +6,8 @@ const NodeGeocoder = require('node-geocoder');
 
 /**
  * Google Map API geocode request
+ *
+ *
  * Give an address in request and get a position back
  */
 router.get('/:address', async function (req, res, next) {
