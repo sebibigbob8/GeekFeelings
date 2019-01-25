@@ -54,7 +54,6 @@ const login = require("./login");
  *       }
  */
 router.get('/', login.authenticate, function (req, res, next) {
-    console.log("Normal Get");
     let query = Rdv.find();
     if (typeof req.query.city !== 'undefined') {
         query = query.where('city', req.query.city);
@@ -66,12 +65,13 @@ router.get('/', login.authenticate, function (req, res, next) {
         query = query.where('creator', req.query.creator);
     }
     if (typeof req.query.notmine !== 'undefined') {
-        console.log("Not mine please")
-        query = query.find({creator: {$ne: req.currentUserId}});
+        query = query.find({creator: {$ne: req.currentUserId}, guest: {$ne: req.currentUserId}});
+    }
+    if (typeof req.query.guest !== 'undefined') {
+        query = query.find({creator: {$ne: req.currentUserId}, guest: req.currentUserId});
     }
     query.exec(function (err, docs) {
         if (err) {
-            console.warn("Could not get all rdvs");
             next(err);
         } else {
             res.send(docs);
@@ -195,22 +195,39 @@ router.patch('/:id', loadRdvById, login.authenticate, function (req, res, next) 
         let newGuestId = req.currentUserId;
         let guests = req.rdv.guest;
         let alreadyIn = false;
-        for (let guest of guests) {
-            if (guest.id === newGuestId) {
-                alreadyIn = true;
-                break;
+        if (req.body.guest) {
+
+            for (let guest of guests) {
+                if (guest === newGuestId) {
+                    alreadyIn = true;
+                    break;
+                }
             }
+            if (alreadyIn)
+                return next(new Error("User already sign up"));
+            guests.push(newGuestId);
+            req.rdv.guest = guests;
+        } else {
+            for (let guest of guests) {
+                if (guest === newGuestId) {
+                    alreadyIn = true;
+                    break;
+                }
+            }
+            if (!alreadyIn)
+                return next(new Error("User not register"));
+            guests = guests.filter(function(id) {
+                return id !== req.currentUserId;
+            });
+            console.log("new guests array"+guests);
+            req.rdv.guest = guests;
         }
-        if (alreadyIn)
-            return next(error("You are alreadyIn"));
-        guests.push(newGuestId);
-        req.body.guest = guests;
     }
     req.rdv.save(function (err, savedRdv) {
         if (err) {
             return next(err);
         }
-        console.log("Updated rdv",savedRdv);
+        console.log("Updated rdv", savedRdv);
         res.send(savedRdv).status(200);
     });
 });
